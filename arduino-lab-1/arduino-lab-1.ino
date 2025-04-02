@@ -1,9 +1,11 @@
 #define F_TO_P_MILLI(f) 1000.0/f
 
-int counter = 0;
-float t = 0.0;
-float t0 = 0.0;
+volatile int counter = 0;
+volatile float t = 0.0;
+volatile float t0 = 0.0;
 float f = 1.0;
+int brightness = 1;
+bool check = false;
 
 void setup() {
   pinMode(13, OUTPUT); // Set pin 13 as output
@@ -13,23 +15,30 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(13, HIGH); // Turn the LED on
+  analogWrite(13, brightness); // Turn the LED on
   delay(F_TO_P_MILLI(f)/2);            // Wait one second
-  digitalWrite(13, LOW);  // Turn the LED off
+  analogWrite(13, 0);  // Turn the LED off
   delay(F_TO_P_MILLI(f)/2);            // Wait one second 
+  // if (Serial.available()) {
+    // f = Serial.readStringUntil('\n').toFloat();
+  //}
   if (Serial.available()) {
-    f = Serial.readStringUntil('\n').toFloat();
+    brightness = Serial.readStringUntil('\n').toFloat();
   }
-  Serial.print("Counter: ");
-  Serial.println(counter);
-  Serial.print("Periodtid: ");
-  Serial.println((t-t0)/1000000.0);
-  Serial.print("Frekvens: ");
-  Serial.println(f);
+  if (check) {
+    Serial.print("Counter: ");
+    Serial.println(counter);
+    Serial.print("Periodtid: ");
+    Serial.println((t-t0)/1000000.0);
+    Serial.print("Frekvens: ");
+    Serial.println(1.0/((t-t0)/1000000.0));
+    check = false;
+  }
 }
 
 void countingISR() {
   counter ++;
   t0 = t;
   t = micros();
+  check = true;
 }
