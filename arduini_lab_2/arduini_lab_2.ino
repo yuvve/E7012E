@@ -1,13 +1,17 @@
 #include <Servo.h>
 
-Servo myservo;
+Servo steering;
+Servo ESC;
+
 
 void setup() {
   // put your setup code here, to run once:
   pinMode(52, INPUT);
-  pinMode(13, OUTPUT);
-  myservo.attach(12);
-  myservo.write(90);
+  ESC.attach(9,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
+  ESC.writeMicroseconds(1500);
+  Serial.begin(9600);
+  steering.attach(10);
+  steering.write(90);
   attachInterrupt(digitalPinToInterrupt(52), detectMagnet, RISING); 
   Serial.begin(9600);
 }
@@ -16,7 +20,7 @@ volatile int magCounter = 0;
 volatile float t = 1.0;
 volatile float t0 = 0.0;
 bool check = false;
-volatile int pwm = 255;
+volatile int escValue;
 volatile int angle = 90;
 
 void loop() {
@@ -31,7 +35,7 @@ void loop() {
     Serial.print(", hastighet: ");
     Serial.println(v);
     check = false;
-  }
+  }           
 
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
@@ -39,13 +43,13 @@ void loop() {
     int value = input.substring(1).toInt();
 
     if (cmd == 'P') {
-      pwm = value;
-      analogWrite(13,pwm);
-      Serial.println(pwm);
+      escValue = value;
+      ESC.write(escValue);
+      ESC.writeMicroseconds(escValue); 
     }
     else if (cmd == 'S') {
       angle = value;
-      myservo.write(angle);
+      steering.write(angle);
       Serial.println(angle);
     }
     else {
@@ -53,7 +57,6 @@ void loop() {
     }
   }
 }
-
 
 void detectMagnet() {
   magCounter ++;
