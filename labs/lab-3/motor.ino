@@ -1,18 +1,19 @@
 #include <Servo.h>
 
-void setupMotor(Servo *self, int pin) {
-    self->attach(pin,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
-    self->writeMicroseconds(1500);
+void setupMotor(Servo *servo, int pin) {
+    servo->attach(pin,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
+    servo->writeMicroseconds(1500);
   if DEBUG {
       Serial.println("Motor initialized");
   }
 }
 
-void changeSpeed(Servo *self, int speedProcent) {
-  int corrected_value = map(speedProcent, -100, 1000, 100, 2000);
-  self->writeMicroseconds(corrected_value);
+void setTargetMotorRPMPercent(Servo *servo, int speedPercent) {
+  int corrected_value = map(speedPercent, -100, 1000, 100, 2000);
+  servo->writeMicroseconds(corrected_value);
   if DEBUG {
-    Serial.print("Changing speed to: ");
-    Serial.println(corrected_value);
+    Serial.print("Setting target RPM to: ");
+    Serial.print(corrected_value);
+    Serial.println("% of max");
   }
 }
