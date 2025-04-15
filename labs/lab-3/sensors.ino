@@ -38,5 +38,5 @@ float getSpeed() {
   noInterrupts();
   float speed = sensorData.speed;
   interrupts();
-  return sensorData.speed;
+  return speed;
 }
