@@ -3,4 +3,7 @@
   typedef struct {
     float speed;
   } SensorData;
+
+  float getSpeed();
+  float setSpeed(float speed);
 #endif
