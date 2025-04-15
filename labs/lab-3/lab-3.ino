@@ -1,6 +1,7 @@
 #include <Servo.h>
 #include "command.h"
 #include "sensors.h"
+#include "PID.h"
 #define DEBUG (1)
 #define WHEEL_RAD 1.0
 
@@ -10,6 +11,7 @@ void setup() {
     setupSteering(10);
     setupMotor(9);
     setupSpeedSensor(54);
+    setupPID(1.0, 1.0, 1.0);
 }
 
 void loop() {
@@ -18,7 +20,7 @@ void loop() {
         Command cmd = parseSerialInput(input);
         switch (cmd.cmd) {
             case 'M':
-                setTargetMotorRPMPercent(cmd.value);
+                setTargetMotorRPMPercent(PIDControl(getSpeed(), cmd.value));
                 break;
             case 'S':
                 changeSteeringAngle(cmd.value);

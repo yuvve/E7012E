@@ -12,6 +12,7 @@ void setupMotor(int pin) {
 
 void setTargetMotorRPMPercent(int speedPercent) {
   int corrected_value = map(speedPercent, -100, 1000, 100, 2000);
+  corrected_value = constrain(corrected_value, -100, 100);
   motor.writeMicroseconds(corrected_value);
   if DEBUG {
     Serial.print("Setting target RPM to: ");
