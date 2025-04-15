@@ -29,9 +29,14 @@ void setupSensorData() {
 }
 
 void setSpeed(float speed){
+  noInterrupts();
   sensorData.speed = speed;
+  interrupts();
 }
 
 float getSpeed() {
+  noInterrupts();
+  float speed = sensorData.speed;
+  interrupts();
   return sensorData.speed;
 }
