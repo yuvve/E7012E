@@ -1,10 +1,8 @@
 import serial
 import io
-import time
 import threading
 
 ser = serial.Serial("/dev/ttyS2", 115200, timeout = 0.1)
-
 sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
 
 def ser_send():
@@ -14,9 +12,9 @@ def ser_send():
         sio.flush()
     except Exception as e:
         print(e)
-    serSend()
-
-def main():
+    ser_send()
+    
+def receive_loop():
     send_thread = threading.Thread(target=ser_send)
     send_thread.start()
     
@@ -27,5 +25,3 @@ def main():
                 print(output)
         except Exception as e:
             print(e)
-        
-main()
