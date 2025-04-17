@@ -1,22 +1,20 @@
 #include "PID.h"
 
-PIDData pidData;
-
-void setupPID(float samplingPeriod, float kP, float kI, float kD) {
-  pidData = {samplingPeriod, kP, kI, kD, 0,0};
+void setupPID(PIDData *self, float samplingPeriod, float kP, float kI, float kD) {
+  *self = {samplingPeriod, kP, kI, kD, 0,0};
 }
 
-float PIDControl(float actualSpeed, float targetSpeed) {
+float PIDControl(PIDData *self, float actualSpeed, float targetSpeed) {
   float error = targetSpeed - actualSpeed;
 
-  float P = pidData.kP * error;
-  
-  pidData.accumulatedError = pidData.accumulatedError + error*samplingPeriod;
-  float I = pidData.kI * pidData.accumulatedError;
+  float P = self->kP * error;
 
-  float derivative = (error - pidData.lastError)/samplingPeriod;
-  float D = pidData.kD * derivative;
+  self->accumulatedError = self->accumulatedError + error*self->samplingPeriod;
+  float I = self->kI * self->accumulatedError;
 
-  pidData.lastError = error;
+  float derivative = (error - self->lastError)/self->samplingPeriod;
+  float D = self->kD * derivative;
+
+  self->lastError = error;
   return P + I + D;
 }

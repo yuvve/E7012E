@@ -4,12 +4,15 @@
 #include "PID.h"
 
 #define DEBUG (1)
-#define WHEEL_RAD_CM 6.5
+#define WHEEL_DIAM_CM 6.5
 #define SAMPLING_PERIOD_MS 100 
 
 volatile float timeSinceLastPIDUpdate = 0;
 volatile float lastTime = 0; 
 volatile float targetSpeed = 0; 
+
+PIDData motorPID;
+PIDData distancePID;
 
 void setup() {
     setupSensorData();
@@ -17,7 +20,7 @@ void setup() {
     setupSteering(10);
     setupMotor(9);
     setupSpeedSensor(54);
-    setupPID(SAMPLING_PERIOD_MS, 1.0, 1.0, 1.0);
+    setupPID(&motorPID, SAMPLING_PERIOD_MS, 1.0, 1.0, 1.0);
 }
 
 void loop() {
@@ -27,7 +30,7 @@ void loop() {
     timeSinceLastPIDUpdate += deltaTime;
 
     if (timeSinceLastPIDUpdate >= SAMPLING_PERIOD_MS) {
-       setTargetMotorRPMPercent(PIDControl(getSpeed(), target_speed));
+       setTargetMotorRPMPercent(PIDControl(&motorPID, getSpeed(), targetSpeed));
     }
 
     if (Serial.available()) {
@@ -35,7 +38,7 @@ void loop() {
         Command cmd = parseSerialInput(input);
         switch (cmd.cmd) {
             case 'M':
-                target_speed = cmd.value;
+                targetSpeed = cmd.value;
                 break;
             case 'S':
                 changeSteeringAngle(cmd.value);
