@@ -18,7 +18,6 @@ void setup() {
     setupSensorData();
     setupSerialUSB(9600);
     setupSerialRock(115200);
-    setupTimer();
     setupTimerInterruptChannel0(SERIAL_FEEDBACK_FREQUENCY);
     setupTimerInterruptChannel1(PID_SAMPLING_FREQUENCY);
     setupSteering(10);

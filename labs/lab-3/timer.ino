@@ -4,20 +4,14 @@ int frequencyToTicks(int frequency, int clockDivisor = 128) {
   return (int)(timerClock / frequency);
 }
 
-void setupTimer() {
-  TC_Configure(TC2, 0,
-  TC_CMR_TCCLKS_TIMER_CLOCK4 |  // MCK/128
-  TC_CMR_WAVE |                 // Waveform mode
-  TC_CMR_WAVSEL_UP_RC);         // Counter resets on RC match
-
-  if DEBUG {
-    Serial.println("Initialized timer for interrupts");
-  }
-}
-
 void setupTimerInterruptChannel0(int frequencyHz) {
   pmc_set_writeprotect(false);
   pmc_enable_periph_clk(ID_TC6); // TC6 = Timer 2 channel 0
+
+  TC_Configure(TC2, 0,
+    TC_CMR_TCCLKS_TIMER_CLOCK4 |  // MCK/128
+    TC_CMR_WAVE |                 // Waveform mode
+    TC_CMR_WAVSEL_UP_RC);         // Counter resets on RC match
 
   int ticks = frequencyToTicks(frequencyHz);
   
@@ -40,6 +34,11 @@ void setupTimerInterruptChannel1(int frequencyHz) {
   pmc_set_writeprotect(false);
   pmc_enable_periph_clk(ID_TC7); // TC7 = Timer 2 channel 1
 
+  TC_Configure(TC2, 1,
+    TC_CMR_TCCLKS_TIMER_CLOCK4 |  // MCK/128
+    TC_CMR_WAVE |                 // Waveform mode
+    TC_CMR_WAVSEL_UP_RC);         // Counter resets on RC match
+
   int ticks = frequencyToTicks(frequencyHz);
   
   TC_SetRC(TC2, 1, ticks);
@@ -60,6 +59,11 @@ void setupTimerInterruptChannel1(int frequencyHz) {
 void setupTimerInterruptChannel2(int frequencyHz) {
   pmc_set_writeprotect(false);
   pmc_enable_periph_clk(ID_TC8); // TC8 = Timer 2 channel 2
+
+  TC_Configure(TC2, 2,
+    TC_CMR_TCCLKS_TIMER_CLOCK4 |  // MCK/128
+    TC_CMR_WAVE |                 // Waveform mode
+    TC_CMR_WAVSEL_UP_RC);         // Counter resets on RC match
 
   int ticks = frequencyToTicks(frequencyHz);
   
