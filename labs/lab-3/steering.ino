@@ -11,7 +11,7 @@ void setupSteering(int pin) {
 }
 
 void changeSteeringAngle(int angle) {
-  int corrected_value = map(angle, -90, 0, 90, 180);
+  int corrected_value = map(angle, -90, 90, 0, 180);
   steering.writeMicroseconds(corrected_value);
   if DEBUG {
     Serial.print("Changing angle to: ");
