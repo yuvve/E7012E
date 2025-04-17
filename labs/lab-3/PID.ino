@@ -2,23 +2,21 @@
 
 PIDData pidData;
 
-void setupPID(float kP, float kI, float kD) {
-  pidData = {kP, kI, kD, 0,0};
+void setupPID(float samplingPeriod, float kP, float kI, float kD) {
+  pidData = {samplingPeriod, kP, kI, kD, 0,0};
 }
 
 float PIDControl(float actualSpeed, float targetSpeed) {
   float error = targetSpeed - actualSpeed;
 
   float P = pidData.kP * error;
+  
+  pidData.accumulatedError = pidData.accumulatedError + error*samplingPeriod;
+  float I = pidData.kI * pidData.accumulatedError;
 
-  pidData.integral = pidData.integral + error;
-  float I = pidData.kI * pidData.integral;
-
-  float derivative = error - pidData.last_error;
+  float derivative = (error - pidData.lastError)/samplingPeriod;
   float D = pidData.kD * derivative;
 
-  float PID = P + I + D;
-
-  pidData.last_error = error;
-  return PID;
+  pidData.lastError = error;
+  return P + I + D;
 }

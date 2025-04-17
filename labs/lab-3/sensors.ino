@@ -5,9 +5,13 @@
 SensorData sensorData;
 SpeedSensor speedSensor;
 
+void setupSensorData() {
+  sensorData.speed = 0;
+}
+
 void setupSpeedSensor(int pin) {
   pinMode(pin, INPUT);
-  speedSensor = {0, micros(), 0};
+  speedSensor = {0, micros()/1000000, 0};
   attachInterrupt(digitalPinToInterrupt(pin), speedSensorISR, RISING); 
   if DEBUG {
     Serial.println("Speed sensor initialized");
@@ -15,17 +19,12 @@ void setupSpeedSensor(int pin) {
 }
 
 void speedSensorISR() {
-  speedSensor.pulsesSinceLastUpdate++;
-  if (speedSensor.pulsesSinceLastUpdate % 4) {
+  speedSensor.pulses++;
+  if (speedSensor.pulses % 4) {
     speedSensor.t0 = speedSensor.t1;
-    speedSensor.t1 = micros();
-    speedSensor.pulsesSinceLastUpdate = 0;
+    speedSensor.t1 = micros()/1000000;
     setSpeed(CALC_SPEED(speedSensor.t0, speedSensor.t1, WHEEL_RAD));
   }
-}
-
-void setupSensorData() {
-  sensorData.speed = 0;
 }
 
 void setSpeed(float speed){

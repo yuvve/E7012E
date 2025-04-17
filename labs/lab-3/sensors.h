@@ -7,6 +7,6 @@
   typedef struct {
     int t0;
     int t1;
-    int pulsesSinceLastUpdate;
+    int pulses;
   } SpeedSensor;
 #endif
