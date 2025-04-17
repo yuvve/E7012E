@@ -6,13 +6,11 @@
 #define DEBUG (1)
 #define WHEEL_DIAM_CM 6.5
 #define SAMPLING_PERIOD_MS 100
+#define SERIAL_FEEDBACK_FREQUENCY 1
+#define PID_SAMPLING_FREQUENCY 1/(SAMPLING_PERIOD_MS*1000)
 
-volatile float timeSinceLastPIDUpdate = 0;
-volatile float lastTime = 0; 
 volatile float targetSpeed = 0; 
 volatile float targetAngle = 0;
-volatile bool sendFeedbackFlag = false;
-
 PIDData motorPID;
 PIDData distancePID;
 
@@ -20,29 +18,33 @@ void setup() {
     setupSensorData();
     setupSerialUSB(9600);
     setupSerialRock(115200);
-    setupFeedbackTimer(1);
+    setupTimer();
+    setupTimerInterruptChannel0(SERIAL_FEEDBACK_FREQUENCY);
+    setupTimerInterruptChannel1(PID_SAMPLING_FREQUENCY);
     setupSteering(10);
     setupMotor(9);
     setupSpeedSensor(54);
     setupPID(&motorPID, SAMPLING_PERIOD_MS, 1.0, 1.0, 1.0);
 }
 
+// Interrupt handler for timer interrupt channel 0
+void TC6_Handler() {
+  TC_GetStatus(TC2, 0);           // Clears interrupt flag
+  sendFeedback();
+}
+
+// Interrupt handler for timer interrupt channel 1
+void TC7_Handler() {
+  TC_GetStatus(TC2, 1);           // Clears interrupt flag
+  setTargetMotorRPMPercent(PIDControl(&motorPID, getSpeed(), targetSpeed));
+}
+
+// Interrupt handler for timer interrupt channel 2
+void TC8_Handler() {
+  TC_GetStatus(TC2, 2);           // Clears interrupt flag
+}
+
 void loop() {
-    float currTime = millis();
-    float deltaTime =  currTime - lastTime;
-    lastTime = currTime;
-    timeSinceLastPIDUpdate += deltaTime;
-
-    if (timeSinceLastPIDUpdate >= SAMPLING_PERIOD_MS) {
-       setTargetMotorRPMPercent(PIDControl(&motorPID, getSpeed(), targetSpeed));
-       timeSinceLastPIDUpdate = 0;
-    }
-
-    if (sendFeedbackFlag) {
-        sendFeedbackFlag = 0;
-        sendFeedback();
-    }
-
     processSerial(Serial1);
     if DEBUG {
         processSerial(Serial);
