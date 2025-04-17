@@ -4,7 +4,7 @@
 #include "PID.h"
 
 #define DEBUG (1)
-#define WHEEL_RAD 1.0
+#define WHEEL_RAD_CM 6.5
 #define SAMPLING_PERIOD_MS 100 
 
 volatile float timeSinceLastPIDUpdate = 0;
