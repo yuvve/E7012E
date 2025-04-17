@@ -1,0 +1,33 @@
+import serial
+import io
+import threading
+
+from config import PORT, BAUD, TIMEOUT
+
+vals = {"none": "-", "speed": "-", "desired_speed": "-", "desired_angle": "-"}
+val_lock = threading.Lock()
+
+_ser = serial.Serial(PORT, BAUD, timeout=TIMEOUT)
+sio  = io.TextIOWrapper(io.BufferedRWPair(_ser, _ser),
+                        newline="\n", write_through=True)
+
+def _receive_loop():
+    while True:
+        raw = sio.readline().strip()
+        if not raw:
+            continue
+        parts = raw.split(" ")
+        if len(parts) < 4:
+            continue
+        with val_lock:
+            vals["none"], vals["speed"], vals["desired_speed"], vals["desired_angle"] = parts[:4]
+
+def start_receiver():
+    t = threading.Thread(target=_receive_loop, daemon=True)
+    t.start()
+
+def send(cmd: str):
+    sio.write(cmd + "\n")
+
+def close():
+    _ser.close()
