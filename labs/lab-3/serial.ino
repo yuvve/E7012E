@@ -70,9 +70,9 @@ void writeSerial(Stream& stream, const char* message) {
 }
 
 void sendFeedback() {
-  float current_speed = getSpeed();
+  float currentSpeed = getSpeed();
   char message[50];
-  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f", current_speed, targetSpeed, targetAngle);
+  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle);
 
   writeSerial(Serial1, message);
   if (DEBUG) {
