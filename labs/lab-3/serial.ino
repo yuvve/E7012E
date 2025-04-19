@@ -22,7 +22,7 @@ Command parseSerialInput(const char* input) {
 
 void readSerial(Stream& serialPort) {
   static char input[10];
-  static int index = 0;
+  static size_t index = 0;
 
   while (serialPort.available()) {
     char c = serialPort.read();

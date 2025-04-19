@@ -8,6 +8,10 @@
 #define SAMPLING_PERIOD_MS 100
 #define SERIAL_FEEDBACK_FREQUENCY 1
 #define PID_SAMPLING_FREQUENCY 1/(SAMPLING_PERIOD_MS*1000)
+#define SPEED_SENSOR_PIN 54
+#define MOTOR_PIN 9
+#define STEERING_PIN 10
+#define BAUD_RATE 115200
 
 volatile float targetSpeed = 0; 
 volatile float targetAngle = 0;
@@ -16,13 +20,13 @@ PIDData distancePID;
 
 void setup() {
     setupSensorData();
-    setupSerialUSB(9600);
-    setupSerialRock(115200);
+    setupSerialUSB(BAUD_RATE);
+    setupSerialRock(BAUD_RATE);
     setupTimerInterruptChannel0(SERIAL_FEEDBACK_FREQUENCY);
     setupTimerInterruptChannel1(PID_SAMPLING_FREQUENCY);
-    setupSteering(10);
-    setupMotor(9);
-    setupSpeedSensor(54);
+    setupSteering(STEERING_PIN);
+    setupMotor(MOTOR_PIN);
+    setupSpeedSensor(SPEED_SENSOR_PIN);
     setupPID(&motorPID, SAMPLING_PERIOD_MS, 1.0, 1.0, 1.0);
 }
 
