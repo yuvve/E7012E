@@ -21,7 +21,7 @@ Command parseSerialInput(const char* input) {
 }
 
 void readSerial(Stream& serialPort) {
-  static char input[10];
+  static char input[64];
   static size_t index = 0;
 
   while (serialPort.available()) {
