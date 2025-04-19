@@ -2,7 +2,6 @@
 
 void setupSerialUSB(int baud) {
   Serial.begin(baud);
-  
   if DEBUG {
       Serial.println("USB Serial initialized");
   }
@@ -10,7 +9,6 @@ void setupSerialUSB(int baud) {
 
 void setupSerialRock(int baud) {
   Serial1.begin(baud);
-
   if DEBUG {
     Serial.println("Serial to Rock initialized");
   }
@@ -28,41 +26,38 @@ void readSerial(Stream& serialPort) {
 
   while (serialPort.available()) {
     char c = serialPort.read();
+    
+    if (DEBUG) {
+      Serial.print(c);
+    }
+
     if (c == '\n') {
       input[index] = '\0'; // Null-terminate the string
-      Command cmd = parseSerialInput(input);
-      
-      if (DEBUG) {
-        Serial.print("Received serial: ");
-        Serial.println(input);
-      }
-
-      switch (cmd.cmd) {
-        case 'M':
-          targetSpeed = cmd.value;
-          break;
-        case 'S':
-          targetAngle = cmd.value;
-          changeSteeringAngle(cmd.value);
-          break;
-        default:
-          break;
-      }
-
-      memset(input, 0, sizeof(input)); // Clear the input buffer
+      processSerialInput(input);
       index = 0;
-    } else {
-      if (index < sizeof(input) - 1) { // Prevent buffer overflow
-        input[index++] = c;
-      } else { // Buffer overflow, reset buffer
-        memset(input, 0, sizeof(input));
-        index = 0;
-
-        if DEBUG {
-          Serial.println("Buffer overflow, resetting input buffer.");
-        }
+    } else if (index < sizeof(input) - 1) { // Check for buffer overflow
+      input[index++] = c;
+    } else { // Buffer overflow 
+      index = 0;
+      if DEBUG {
+        Serial.println("Buffer overflow, resetting index");
       }
     }
+  }
+}
+
+void processSerialInput(const char* input) {
+  Command cmd = parseSerialInput(input);
+  switch (cmd.cmd) {
+    case 'M':
+      targetSpeed = cmd.value;
+      break;
+    case 'S':
+      targetAngle = cmd.value;
+      changeSteeringAngle(cmd.value);
+      break;
+    default:
+      break;
   }
 }
 
