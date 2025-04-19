@@ -1,3 +1,5 @@
+#define BUFFER_SIZE 32
+
 void setupSerialUSB(int baud) {
   Serial.begin(baud);
   
@@ -21,7 +23,7 @@ Command parseSerialInput(const char* input) {
 }
 
 void readSerial(Stream& serialPort) {
-  static char input[64];
+  static char input[BUFFER_SIZE];
   static size_t index = 0;
 
   while (serialPort.available()) {
@@ -64,14 +66,14 @@ void readSerial(Stream& serialPort) {
   }
 }
 
-void writeSerial(Stream& stream, const char* message) {
-  stream.println(message);
-  stream.flush();
+void writeSerial(Stream& serialPort, const char* message) {
+  serialPort.println(message);
+  serialPort.flush();
 }
 
 void sendFeedback() {
   float currentSpeed = getSpeed();
-  char message[50];
+  char message[BUFFER_SIZE];
   snprintf(message, sizeof(message), "FB %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle);
 
   writeSerial(Serial1, message);
