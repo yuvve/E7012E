@@ -14,70 +14,68 @@ void setupSerialRock(int baud) {
   }
 }
 
-Command parseSerialInput(String input) {
-  char cmd = input.charAt(0);
-  int value = input.substring(1).toInt();
+Command parseSerialInput(const char* input) {
+  char cmd = input[0];
+  int value = atoi(input + 1); // Convert the rest of the string to an integer
   return Command {cmd, value};
 }
 
-void sendFeedback() {
-  float current_speed = getSpeed();
-  Serial1.print("FB ");
-  Serial1.print(current_speed);
-  Serial1.print(" ");
-  Serial1.print(targetSpeed);
-  Serial1.print(" ");
-  Serial1.println(targetAngle);
-  Serial1.flush();
-
-  if DEBUG {
-    Serial.print("FB ");
-    Serial.print(current_speed);
-    Serial.print(" ");
-    Serial.print(targetSpeed);
-    Serial.print(" ");
-    Serial.println(targetAngle);
-    Serial.flush();
-  }
-}
-
-void processSerial(Stream& serialPort) {
-  static String input;
+void readSerial(Stream& serialPort) {
+  static char input[10];
+  static int index = 0;
 
   while (serialPort.available()) {
     char c = serialPort.read();
     if (c == '\n') {
-      input.trim();
+      input[index] = '\0'; // Null-terminate the string
       Command cmd = parseSerialInput(input);
+      
+      if (DEBUG) {
+        Serial.print("Received serial: ");
+        Serial.println(input);
+      }
 
       switch (cmd.cmd) {
         case 'M':
           targetSpeed = cmd.value;
-          sendFeedback();
-
-          if (DEBUG) {
-            Serial.print(cmd.cmd);
-            Serial.println(cmd.value);
-          }
           break;
-
         case 'S':
           targetAngle = cmd.value;
           changeSteeringAngle(cmd.value);
-          sendFeedback();
-
-          if (DEBUG) {
-            Serial.print(cmd.cmd);
-            Serial.println(cmd.value);
-          }
           break;
         default:
           break;
       }
 
-      input = "";
+      memset(input, 0, sizeof(input)); // Clear the input buffer
+      index = 0;
     } else {
-      input += c;
+      if (index < sizeof(input) - 1) { // Prevent buffer overflow
+        input[index++] = c;
+      } else { // Buffer overflow, reset buffer
+        memset(input, 0, sizeof(input));
+        index = 0;
+
+        if DEBUG {
+          Serial.println("Buffer overflow, resetting input buffer.");
+        }
+      }
     }
+  }
+}
+
+void writeSerial(Stream& stream, const char* message) {
+  stream.println(message);
+  stream.flush();
+}
+
+void sendFeedback() {
+  float current_speed = getSpeed();
+  char message[50];
+  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f", current_speed, targetSpeed, targetAngle);
+
+  writeSerial(Serial1, message);
+  if (DEBUG) {
+    writeSerial(Serial, message);
   }
 }

@@ -44,9 +44,9 @@ void TC8_Handler() {
 }
 
 void loop() {
-    processSerial(Serial1);
+    readSerial(Serial1);
     if DEBUG {
-        processSerial(Serial);
+        readSerial(Serial);
     }
 }
 
