@@ -5,7 +5,7 @@ SensorData sensorData;
 SpeedSensor speedSensor;
 
 void setupSensorData() {
-  sensorData.speed = 0.0f;
+  sensorData = {0.0f};
 }
 
 void setupSpeedSensor(unsigned int pin) {

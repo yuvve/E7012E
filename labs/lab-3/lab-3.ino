@@ -29,7 +29,7 @@ void setup() {
     setupMotor(MOTOR_PIN);
     setupSpeedSensor(SPEED_SENSOR_PIN);
     setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))), 1.0, 1.0, 1.0);
-    if DEBUG {s
+    if DEBUG {
     Serial.println("Setup complete!");
   }
 }
