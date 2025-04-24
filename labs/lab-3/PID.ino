@@ -1,7 +1,7 @@
 #include "PID.h"
 
-void setupPID(PIDData *self, float samplingPeriodMS, float kP, float kI, float kD) {
-  *self = {samplingPeriodMS, kP, kI, kD, 0.0f,0.0f};
+void setupPID(PIDData *self, float samplingPeriodMS, float maxAccumaltedError, float kP, float kI, float kD) {
+  *self = {samplingPeriodMS, kP, kI, kD, 0.0f,0.0f, maxAccumaltedError};
   if DEBUG {
     Serial.print("Initialized PID with sampling period: ");
     Serial.print(samplingPeriodMS);
@@ -15,7 +15,7 @@ float PIDControl(PIDData *self, float actualSpeed, float targetSpeed) {
   float P = self->kP * error;
 
   self->accumulatedError = self->accumulatedError + error*self->samplingPeriodMS;
-  float I = self->kI * self->accumulatedError;
+  float I = self->kI * constrain(self->accumulatedError,-self->maxAccumaltedError,self->maxAccumaltedError);
 
   float derivative = (error - self->lastError)/self->samplingPeriodMS;
   float D = self->kD * derivative;

@@ -7,5 +7,6 @@
     float kD;
     float accumulatedError;
     float lastError;
+    float maxAccumaltedError;
   } PIDData;
 #endif

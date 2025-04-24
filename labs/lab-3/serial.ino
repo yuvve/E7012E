@@ -78,7 +78,7 @@ void writeSerial(Stream& serialPort, const char* message) {
 void sendFeedback() {
   float currentSpeed = getSpeed();
   char message[BUFFER_SIZE];
-  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle, motorPID.kP, motorPID.kI, motorPID.kD);
+  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle);
 
   writeSerial(Serial1, message);
   if (DEBUG) {

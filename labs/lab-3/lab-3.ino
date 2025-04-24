@@ -31,7 +31,7 @@ void setup() {
     setupSteering(STEERING_PIN);
     setupMotor(MOTOR_PIN);
     setupSpeedSensor(SPEED_SENSOR_PIN);
-    setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))), 0.0, 0.0, 0.0);
+    setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),10, 0.0, 0.0, 0.0);
     if DEBUG {
     Serial.println("Setup complete!");
   }
