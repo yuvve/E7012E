@@ -2,6 +2,6 @@
 #define COMMAND_H
   typedef struct {
     char cmd;
-    int value;
+    float value;
   } Command;
 #endif

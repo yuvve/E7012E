@@ -16,7 +16,7 @@ void setupSerialRock(int baud) {
 
 Command parseSerialInput(const char* input) {
   char cmd = input[0];
-  int value = atoi(input + 1); // Convert the rest of the string to an integer
+  float value = atof(input + 1); // Convert the rest of the string to an integer
   return Command {cmd, value};
 }
 
@@ -78,7 +78,7 @@ void writeSerial(Stream& serialPort, const char* message) {
 void sendFeedback() {
   float currentSpeed = getSpeed();
   char message[BUFFER_SIZE];
-  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle);
+  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle, motorPID.kP, motorPID.kI, motorPID.kD);
 
   writeSerial(Serial1, message);
   if (DEBUG) {
