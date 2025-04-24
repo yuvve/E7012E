@@ -1,5 +1,5 @@
 #include "sensors.h"
-#define CALC_SPEED(t0, t1, r) 2*PI*r/(t1-t0)
+#define CALC_SPEED(t0, t1, r) 2.0*PI*r/((float)(t1-t0))
 
 SensorData sensorData;
 SpeedSensor speedSensor;

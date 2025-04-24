@@ -4,7 +4,7 @@
 #include "PID.h"
 
 #define DEBUG (1)
-#define WHEEL_DIAM_CM 6.5
+#define WHEEL_DIAM_CM 6.5f
 #define SERIAL_FEEDBACK_FREQUENCY 1
 #define PID_SAMPLING_FREQUENCY 25
 #define SPEED_SENSOR_PIN 54
