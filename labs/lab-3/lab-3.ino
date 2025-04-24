@@ -51,11 +51,11 @@ void TC8_Handler() {
 
 // Flag-based programming needed for Arduino framework
 void loop() {
-    if pidFlag {
+    if (pidFlag) {
       setTargetMotorRPMPercent(PIDControl(&motorPID, getSpeed(), targetSpeed));
       pidFlag = false;
     }
-    if sendFeedbackFlag {
+    if (sendFeedbackFlag) {
       sendFeedback();
       sendFeedbackFlag = false;
     }
