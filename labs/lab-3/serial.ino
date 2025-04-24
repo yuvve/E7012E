@@ -56,6 +56,15 @@ void processSerialInput(const char* input) {
       targetAngle = cmd.value;
       changeSteeringAngle(cmd.value);
       break;
+    case 'P':
+      adjustP(&motorPID, cmd.value);
+      break;
+    case 'I':
+      adjustI(&motorPID, cmd.value);
+      break;
+    case 'D':
+      adjustD(&motorPID, cmd.value);
+      break;
     default:
       break;
   }

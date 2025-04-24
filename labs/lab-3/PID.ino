@@ -1,7 +1,7 @@
 #include "PID.h"
 
 void setupPID(PIDData *self, float samplingPeriod, float kP, float kI, float kD) {
-  *self = {samplingPeriod, kP, kI, kD, 0,0};
+  *self = {samplingPeriod, kP, kI, kD, 0.0f,0.0f};
 }
 
 float PIDControl(PIDData *self, float actualSpeed, float targetSpeed) {
@@ -17,4 +17,16 @@ float PIDControl(PIDData *self, float actualSpeed, float targetSpeed) {
 
   self->lastError = error;
   return P + I + D;
+}
+
+void adjustP(PIDData *self, float kP) {
+  self->kP = kP;
+}
+
+void adjustI(PIDData *self, float kI) {
+  self->kI = kI;
+}
+
+void adjustD(PIDData *self, float kD) {
+  self->kD = kD;
 }
