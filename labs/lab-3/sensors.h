@@ -6,7 +6,7 @@
   
   typedef struct {
     int t0;
-    int t1;
-    int pulses;
+    int pulses0;
+    int pulses1;
   } SpeedSensor;
 #endif
