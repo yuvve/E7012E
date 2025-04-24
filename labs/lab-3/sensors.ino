@@ -1,5 +1,5 @@
 #include "sensors.h"
-#define CALC_SPEED(t0, t1, r) 2.0*PI*r/((float)(t1-t0))
+#define WHEEL_CONSTANT PI*WHEEL_DIAM_CM
 
 SensorData sensorData;
 SpeedSensor speedSensor;
@@ -10,7 +10,7 @@ void setupSensorData() {
 
 void setupSpeedSensor(unsigned int pin) {
   pinMode(pin, INPUT);
-  speedSensor = {0, (int)(micros()/1000000), 0};
+  speedSensor = {0, micros(), 0};
   attachInterrupt(digitalPinToInterrupt(pin), speedSensorISR, RISING); 
   if DEBUG {
     Serial.println("Speed sensor initialized");
@@ -21,8 +21,9 @@ void speedSensorISR() {
   speedSensor.pulses++;
   if (speedSensor.pulses % 4) {
     speedSensor.t0 = speedSensor.t1;
-    speedSensor.t1 = (int) (micros()/1000000);
-    setSpeed(CALC_SPEED(speedSensor.t0, speedSensor.t1, (WHEEL_DIAM_CM/2)*100));
+    speedSensor.t1 = micros();
+    float speed = WHEEL_CONSTANT/((float) speedSensor.t1-speedSensor.t0);
+    setSpeed(speed);
   }
 }
 
