@@ -8,9 +8,9 @@ void setupSensorData() {
   sensorData.speed = 0;
 }
 
-void setupSpeedSensor(int pin) {
+void setupSpeedSensor(unsigned int pin) {
   pinMode(pin, INPUT);
-  speedSensor = {0, micros()/1000000, 0};
+  speedSensor = {0, (int)(micros()/1000000), 0};
   attachInterrupt(digitalPinToInterrupt(pin), speedSensorISR, RISING); 
   if DEBUG {
     Serial.println("Speed sensor initialized");

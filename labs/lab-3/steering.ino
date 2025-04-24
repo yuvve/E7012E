@@ -2,7 +2,7 @@
 
 Servo steering;
 
-void setupSteering(int pin) {
+void setupSteering(unsigned int pin) {
     steering.attach(pin);
     steering.write(90);
   if DEBUG {

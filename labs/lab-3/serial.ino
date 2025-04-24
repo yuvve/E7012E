@@ -1,6 +1,7 @@
+#define BUFFER_SIZE 32
+
 void setupSerialUSB(int baud) {
   Serial.begin(baud);
-  
   if DEBUG {
       Serial.println("USB Serial initialized");
   }
@@ -8,76 +9,70 @@ void setupSerialUSB(int baud) {
 
 void setupSerialRock(int baud) {
   Serial1.begin(baud);
-
   if DEBUG {
     Serial.println("Serial to Rock initialized");
   }
 }
 
-Command parseSerialInput(String input) {
-  char cmd = input.charAt(0);
-  int value = input.substring(1).toInt();
+Command parseSerialInput(const char* input) {
+  char cmd = input[0];
+  int value = atoi(input + 1); // Convert the rest of the string to an integer
   return Command {cmd, value};
 }
 
-void sendFeedback() {
-  float current_speed = getSpeed();
-  Serial1.print("FB ");
-  Serial1.print(current_speed);
-  Serial1.print(" ");
-  Serial1.print(targetSpeed);
-  Serial1.print(" ");
-  Serial1.println(targetAngle);
-  Serial1.flush();
-
-  if DEBUG {
-    Serial.print("FB ");
-    Serial.print(current_speed);
-    Serial.print(" ");
-    Serial.print(targetSpeed);
-    Serial.print(" ");
-    Serial.println(targetAngle);
-    Serial.flush();
-  }
-}
-
-void processSerial(Stream& serialPort) {
-  static String input;
+void readSerial(Stream& serialPort) {
+  static char input[BUFFER_SIZE];
+  static size_t index = 0;
 
   while (serialPort.available()) {
     char c = serialPort.read();
-    if (c == '\n') {
-      input.trim();
-      Command cmd = parseSerialInput(input);
-
-      switch (cmd.cmd) {
-        case 'M':
-          targetSpeed = cmd.value;
-          sendFeedback();
-
-          if (DEBUG) {
-            Serial.print(cmd.cmd);
-            Serial.println(cmd.value);
-          }
-          break;
-
-        case 'S':
-          targetAngle = cmd.value;
-          changeSteeringAngle(cmd.value);
-          sendFeedback();
-
-          if (DEBUG) {
-            Serial.print(cmd.cmd);
-            Serial.println(cmd.value);
-          }
-          break;
-        default:
-          break;
-      }
-
-      input = "";
-    } else {
-      input += c;
+    
+    if (DEBUG) {
+      Serial.print(c);
     }
+
+    if (c == '\n') {
+      input[index] = '\0'; // Null-terminate the string
+      processSerialInput(input);
+      index = 0;
+    } else if (index < sizeof(input) - 1) { // Check for buffer overflow
+      input[index++] = c;
+    } else { // Buffer overflow 
+      index = 0;
+      if DEBUG {
+        Serial.println("Buffer overflow, resetting index");
+      }
+    }
+  }
+}
+
+void processSerialInput(const char* input) {
+  Command cmd = parseSerialInput(input);
+  switch (cmd.cmd) {
+    case 'M':
+      targetSpeed = cmd.value;
+      break;
+    case 'S':
+      targetAngle = cmd.value;
+      changeSteeringAngle(cmd.value);
+      break;
+    default:
+      break;
+  }
+}
+
+void writeSerial(Stream& serialPort, const char* message) {
+  serialPort.println(message);
+  serialPort.flush();
+}
+
+void sendFeedback() {
+  float currentSpeed = getSpeed();
+  char message[BUFFER_SIZE];
+  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle);
+
+  writeSerial(Serial1, message);
+  if (DEBUG) {
+    writeSerial(Serial, message);
   }
 }
