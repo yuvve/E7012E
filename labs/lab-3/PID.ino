@@ -26,12 +26,24 @@ float PIDControl(PIDData *self, float actualSpeed, float targetSpeed) {
 
 void adjustP(PIDData *self, float kP) {
   self->kP = kP;
+  if (DEBUG) {
+    Serial.print("Changing PID kP to: ");
+    Serial.println(kP);
+  }
 }
 
 void adjustI(PIDData *self, float kI) {
   self->kI = kI;
+  if (DEBUG) {
+    Serial.print("Changing PID kI to: ");
+    Serial.println(kI);
+  }
 }
 
 void adjustD(PIDData *self, float kD) {
   self->kD = kD;
+    if (DEBUG) {
+    Serial.print("Changing PID kD to: ");
+    Serial.println(kD);
+  }
 }

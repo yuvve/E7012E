@@ -35,7 +35,6 @@ float calcCurrSpeed(){
   speedSensor.pulses0 = speedSensor.pulses1;
   sensorData.speed = speed;
   interrupts();
-  return speed;
 }
 
 float getSpeed() {
