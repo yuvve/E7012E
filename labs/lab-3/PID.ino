@@ -2,6 +2,11 @@
 
 void setupPID(PIDData *self, float samplingPeriodMS, float kP, float kI, float kD) {
   *self = {samplingPeriodMS, kP, kI, kD, 0.0f,0.0f};
+  if DEBUG {
+    Serial.print("Initialized PID with sampling period: ");
+    Serial.print(samplingPeriodMS);
+    Serial.println(" ms");
+  }
 }
 
 float PIDControl(PIDData *self, float actualSpeed, float targetSpeed) {
