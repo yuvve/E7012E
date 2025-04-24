@@ -1,7 +1,7 @@
 #ifndef PID_H
 #define PID_H
   typedef struct {
-    float samplingPeriod;
+    float samplingPeriodMS;
     float kP;
     float kI;
     float kD;

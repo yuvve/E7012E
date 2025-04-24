@@ -5,9 +5,8 @@
 
 #define DEBUG (1)
 #define WHEEL_DIAM_CM 6.5
-#define SAMPLING_PERIOD_MS 100
 #define SERIAL_FEEDBACK_FREQUENCY 1
-#define PID_SAMPLING_FREQUENCY 1/(SAMPLING_PERIOD_MS*1000)
+#define PID_SAMPLING_FREQUENCY 25
 #define SPEED_SENSOR_PIN 54
 #define MOTOR_PIN 9
 #define STEERING_PIN 10
@@ -29,7 +28,7 @@ void setup() {
     setupSteering(STEERING_PIN);
     setupMotor(MOTOR_PIN);
     setupSpeedSensor(SPEED_SENSOR_PIN);
-    setupPID(&motorPID, SAMPLING_PERIOD_MS, 1.0, 1.0, 1.0);
+    setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))), 1.0, 1.0, 1.0);
 }
 
 // Interrupt handler for timer interrupt channel 0
