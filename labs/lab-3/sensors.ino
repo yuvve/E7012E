@@ -22,7 +22,8 @@ void speedSensorISR() {
   if (speedSensor.pulses % 4) {
     speedSensor.t0 = speedSensor.t1;
     speedSensor.t1 = micros();
-    float speed = WHEEL_CONSTANT/((float) speedSensor.t1-speedSensor.t0);
+    float deltaTime = (float) ((speedSensor.t1-speedSensor.t0)/1000000.0);
+    float speed = WHEEL_CONSTANT/deltaTime;
     setSpeed(speed);
   }
 }
