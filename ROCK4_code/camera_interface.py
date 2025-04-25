@@ -44,7 +44,7 @@ def _camera_loop():
                         focal_length=FOCAL_LENGTH_PX
                     )
 
-            cv.imshow("Detection", frame)
+            #cv.imshow("Detection", frame)
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
     finally:
