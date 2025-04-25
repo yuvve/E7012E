@@ -44,31 +44,6 @@ void readSerial(Stream& serialPort) {
   }
 }
 
-void processSerialInput(const char* input) {
-  Command cmd = parseSerialInput(input);
-  switch (cmd.cmd) {
-    case 'M':
-      targetSpeed = cmd.value;
-      motorStarted = true;
-      break;
-    case 'S':
-      targetAngle = cmd.value;
-      changeSteeringAngle(cmd.value);
-      break;
-    case 'P':
-      adjustP(&motorPID, cmd.value);
-      break;
-    case 'I':
-      adjustI(&motorPID, cmd.value);
-      break;
-    case 'D':
-      adjustD(&motorPID, cmd.value);
-      break;
-    default:
-      break;
-  }
-}
-
 void writeSerial(Stream& serialPort, const char* message) {
   serialPort.println(message);
   serialPort.flush();

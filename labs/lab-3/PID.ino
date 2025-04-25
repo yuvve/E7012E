@@ -16,25 +16,46 @@ void setupPID(PIDData *self, float samplingPeriodMS, float maxAccumulatedError, 
   }
 }
 
+void resetPID(PIDData *self) {
+  for (int i = 0; i < PID_WINDOW_SIZE_SAMP; i++) {
+    self->error[i] = 0.0f;
+  }
+  if (DEBUG) {
+    Serial.println("Resetting PID");
+  }
+}
+
 /**
 * Calculates the next control signal from the PID controller for the given PIDData struct.
-* Uses a sliding window for the accumulated error
-* Constraints the integral term to prevent integral windup 
+* Anti integral-windup measures:
+*   1. A sliding window for the accumulated error
+*   2. (Optional) Resetting the accumulated error when it crosses 0
+*   3. Constraining the accumulated error when calculating the I part to [-minAccumulatedError, maxAccumulatedError]
 **/
 float PIDControl(PIDData *self, float actualValue, float targetValue) {
   float error = targetValue - actualValue;
 
-  // Anti-windup measure 1: sliding error window
   float accumulatedError = error;
+
+  // Sliding error window
   for(int i=1; i<PID_WINDOW_SIZE_SAMP; i++) {
     accumulatedError += self->error[i];
     self->error[i-1] = self->error[i];
   }
 
   self->error[PID_WINDOW_SIZE_SAMP-1] = error;
+
+  // Resetting accumulated error when it crosses 0
+  if (ACCUMULATOR_RESET) {
+    if (error * self->error[PID_WINDOW_SIZE_SAMP-1] < 0) {
+      for (int i = 0; i < PID_WINDOW_SIZE_SAMP; i++) {
+        self->error[i] = 0.0f;
+      }
+      accumulatedError = 0.0f;
+    }
+  }
   
   float P = self->kP * error;
-  // Anti-windup measure 2: constraining error when calculating the I part
   float I = self->kI * constrain(accumulatedError,-self->maxAccumulatedError,self->maxAccumulatedError);
   float D = self->kD * (error - self->error[PID_WINDOW_SIZE_SAMP-1])/(self->samplingPeriodMS/1000);
   

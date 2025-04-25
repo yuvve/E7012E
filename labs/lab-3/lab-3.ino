@@ -49,6 +49,37 @@ void TC8_Handler() {
   speedFlag = true;
 }
 
+void processSerialInput(const char* input) {
+  Command cmd = parseSerialInput(input);
+  switch (cmd.cmd) {
+    case 'M':
+      targetSpeed = cmd.value;
+      if (targetSpeed == 0){
+        motorStarted = false; 
+        setTargetMotorRPMPercent(0);
+        resetPID(&motorPID);
+      } else {
+        motorStarted = true;
+      }
+      break;
+    case 'S':
+      targetAngle = cmd.value;
+      changeSteeringAngle(cmd.value);
+      break;
+    case 'P':
+      adjustP(&motorPID, cmd.value);
+      break;
+    case 'I':
+      adjustI(&motorPID, cmd.value);
+      break;
+    case 'D':
+      adjustD(&motorPID, cmd.value);
+      break;
+    default:
+      break;
+  }
+}
+
 // Flag-based programming needed for Arduino framework
 void loop() {
     if (speedFlag) {
