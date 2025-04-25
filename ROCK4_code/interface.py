@@ -1,6 +1,8 @@
 import os
 import time
 
+from config import TIMEOUT
+
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
@@ -11,4 +13,4 @@ def display(vals, lock):
         print(f"desired_angle: {vals['desired_angle']}\n")
     print("Type a command and hit Enter (or 'exit'):")
 
-    time.sleep(0.1)
+    time.sleep(TIMEOUT)

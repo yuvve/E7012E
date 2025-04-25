@@ -20,9 +20,10 @@ def main():
             except queue.Empty:
                 continue
 
-            if cmd.lower() in ("exit", "quit", "leave"):
+            if cmd.lower() in ("exit"):
                 break
-
+            
+            #print(cmd)
             send(cmd)
 
     except KeyboardInterrupt:

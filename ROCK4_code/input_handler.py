@@ -6,7 +6,7 @@ def start_input_thread(cmd_queue):
         while True:
             line = input()
             cmd_queue.put(line)
-            if line.lower() in ("exit", "quit", "leave"):
+            if line.lower() in ("exit"):
                 break
 
     t = threading.Thread(target=_input_loop, daemon=True)

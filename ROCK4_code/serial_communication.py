@@ -8,8 +8,7 @@ vals = {"none": "-", "speed": "-", "desired_speed": "-", "desired_angle": "-"}
 val_lock = threading.Lock()
 
 _ser = serial.Serial(PORT, BAUD, timeout=TIMEOUT)
-sio  = io.TextIOWrapper(io.BufferedRWPair(_ser, _ser),
-                        newline="\n", write_through=True)
+sio  = io.TextIOWrapper(io.BufferedRWPair(_ser, _ser))
 
 def _receive_loop():
     while True:
@@ -28,6 +27,7 @@ def start_receiver():
 
 def send(cmd: str):
     sio.write(cmd + "\n")
+    sio.flush()
 
 def close():
     _ser.close()
