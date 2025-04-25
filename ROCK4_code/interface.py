@@ -12,7 +12,7 @@ def display(vals, camera_vals, lock, camera_lock):
         print(f"speed: {vals['speed']}")
         print(f"desired_speed: {vals['desired_speed']}")
         print(f"desired_angle: {vals['desired_angle']}")
-        print(f"pid_output: {vals["pid_output"]}\n")
+        print(f"pid_output: {vals['pid_output']}\n")
 
     with camera_lock:
         print("Camera Values:")
