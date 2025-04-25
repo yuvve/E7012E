@@ -9,7 +9,11 @@ void setupMotor(int pin) {
 }
 
 void setTargetMotorRPMPercent(int speedPercent) {
-  int correctedValue = map(speedPercent, -100, 100, 1000, 2000);
-  correctedValue = constrain(correctedValue, 1000, 2000);
+  if (speedPercent == 0) {
+    motor.writeMicroseconds(1500);
+    return;
+  }
+  int correctedValue = map(speedPercent, 0, 100, 1600, 2000);
+  correctedValue = constrain(correctedValue, 1500, 2000);
   motor.writeMicroseconds(correctedValue);
 }

@@ -24,13 +24,12 @@ void speedSensorISR() {
 }
 
 // Calculates the new current speed and update the internal data structure
-// also returns the speed
-float calcCurrSpeed(){
+void calcCurrSpeed(){
   noInterrupts();
-  int t1 = micros();
-  float deltaPulses = (float) (speedSensor.pulses1 - speedSensor.pulses0);
-  float deltaTime = ((float) (t1-speedSensor.t0)/1000000.0);
-  float speed = (deltaPulses/deltaTime)*METERS_PER_PULSE;
+  uint32_t t1 = micros();
+  double deltaPulses = (double) (speedSensor.pulses1 - speedSensor.pulses0);
+  double deltaTime = ((double) (t1-speedSensor.t0)/1000000.0);
+  double speed = (deltaPulses/deltaTime)*METERS_PER_PULSE;
   speedSensor.t0 = t1;
   speedSensor.pulses0 = speedSensor.pulses1;
   sensorData.speed = speed;

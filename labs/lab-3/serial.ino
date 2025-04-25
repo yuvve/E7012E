@@ -51,6 +51,7 @@ void processSerialInput(const char* input) {
   switch (cmd.cmd) {
     case 'M':
       targetSpeed = cmd.value;
+      motorStarted = true;
       break;
     case 'S':
       targetAngle = cmd.value;
@@ -78,7 +79,7 @@ void writeSerial(Stream& serialPort, const char* message) {
 void sendFeedback() {
   float currentSpeed = getSpeed();
   char message[BUFFER_SIZE];
-  snprintf(message, sizeof(message), "FB %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle);
+  snprintf(message, sizeof(message), "%.2f %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle, motorTargetRPMPercent);
 
   writeSerial(Serial1, message);
   if (DEBUG) {
