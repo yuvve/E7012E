@@ -10,6 +10,8 @@ RED_UPPER2 = np.array([180, 255, 255], dtype=np.uint8)
 GREEN_LOWER = np.array([50,  80,  80], dtype=np.uint8)
 GREEN_UPPER = np.array([90, 255, 255], dtype=np.uint8)
 
+camera_vals = {"shape": "-", "color": "-", "depth": 0.0}
+
 def get_color_masks(hsv: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     red_mask = (
         cv.inRange(hsv, RED_LOWER1, RED_UPPER1) |
@@ -51,6 +53,8 @@ def estimate_depth(real_radius: float, focal_length: float, pixel_radius: float)
 
 def annotate_frame(frame, cnt, shape, color, real_radius, focal_length) -> None:
     cv.drawContours(frame, [cnt], -1, (0,255,0), 2)
+    depth = 0.0
+
     if shape == "circle":
         (x,y), r = cv.minEnclosingCircle(cnt)
         if r > 10:
@@ -69,3 +73,7 @@ def annotate_frame(frame, cnt, shape, color, real_radius, focal_length) -> None:
             cv.putText(frame, label,
                        (cx-50, cy-10),
                        cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 2)
+
+    camera_vals["shape"] = shape
+    camera_vals["color"] = color
+    camera_vals["depth"] = depth

@@ -3,7 +3,8 @@ import queue
 from interface import clear, display
 from serial_communication import start_receiver, send, close, vals, val_lock
 from input_handler import start_input_thread
-from camera_interface  import start_camera_thread, stop_camera
+from camera_interface  import start_camera_thread, stop_camera, camera_val_lock
+from camera_detection import camera_vals
 
 def main():
 
@@ -18,7 +19,7 @@ def main():
     try:
         while True:
             clear()
-            display(vals, val_lock)
+            display(vals, camera_vals, val_lock, camera_val_lock)
 
             try:
                 cmd = cmd_q.get_nowait()

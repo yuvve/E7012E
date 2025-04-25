@@ -6,11 +6,19 @@ from config import TIMEOUT
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
-def display(vals, lock):
+def display(vals, camera_vals, lock, camera_lock):
     with lock:
+        print("Serial Communication Values:")
         print(f"speed: {vals['speed']}")
         print(f"desired_speed: {vals['desired_speed']}")
         print(f"desired_angle: {vals['desired_angle']}\n")
+
+    with camera_lock:
+        print("Camera Values:")
+        print(f"detected_shape: {camera_vals['shape']}")
+        print(f"detected_color: {camera_vals['color']}")
+        print(f"detected_depth: {camera_vals['depth']}\n")
+
     print("Type a command and hit Enter (or 'exit'):")
 
     time.sleep(TIMEOUT)

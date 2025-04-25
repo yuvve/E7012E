@@ -1,4 +1,3 @@
-
 import sys
 import threading
 import cv2 as cv
@@ -13,6 +12,7 @@ from camera_detection import (
 )
 
 _running = False
+camera_val_lock = threading.Lock()
 
 def _camera_loop():
     cap = cv.VideoCapture(CAMERA_INDEX)
@@ -36,11 +36,13 @@ def _camera_loop():
             for cnt in contours:
                 shape = classify_shape(cnt)
                 color = detect_color(cnt, red_mask, green_mask)
-                annotate_frame(
-                    frame, cnt, shape, color,
-                    real_radius=REAL_DISK_RADIUS_M,
-                    focal_length=FOCAL_LENGTH_PX
-                )
+
+                with camera_val_lock:
+                    annotate_frame(
+                        frame, cnt, shape, color,
+                        real_radius=REAL_DISK_RADIUS_M,
+                        focal_length=FOCAL_LENGTH_PX
+                    )
 
             cv.imshow("Detection", frame)
             if cv.waitKey(1) & 0xFF == ord('q'):
