@@ -1,7 +1,4 @@
 #include "sensors.h"
-#define NR_MAGNETS 4.0f
-#define WHEEL_CONSTANT PI*WHEEL_DIAM_CM/100.0 // 2*PI*r = 2*PI*diam/2 = PI*diam
-#define METERS_PER_PULSE WHEEL_CONSTANT/NR_MAGNETS
 
 SensorData sensorData;
 SpeedSensor speedSensor;

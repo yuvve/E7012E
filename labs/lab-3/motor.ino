@@ -8,6 +8,13 @@ void setupMotor(int pin) {
   }
 }
 
+/**
+* Sends requested RPM to the ESC
+*
+* 0 maps to 0
+* Anything above zero maps to a mapping function that starts at around 24%, 
+* as anything under that is not enough to make the motor move.
+**/
 void setTargetMotorRPMPercent(int speedPercent) {
   if (speedPercent == 0) {
     motor.writeMicroseconds(1500);
