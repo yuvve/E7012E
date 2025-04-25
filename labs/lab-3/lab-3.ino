@@ -6,7 +6,7 @@
 #define DEBUG (1)
 #define WHEEL_DIAM_CM 6.5f
 #define SERIAL_FEEDBACK_FREQUENCY 10
-#define PID_SAMPLING_FREQUENCY 5
+#define PID_SAMPLING_FREQUENCY 500
 #define SPEED_SENSOR_UPDATE_FREQUENCY 5
 #define SPEED_SENSOR_PIN 54
 #define MOTOR_PIN 9
@@ -33,7 +33,8 @@ void setup() {
     setupSteering(STEERING_PIN);
     setupMotor(MOTOR_PIN);
     setupSpeedSensor(SPEED_SENSOR_PIN);
-    setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),10, 128.0, 232.73, 17.6);
+    setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),9999.9, 128.0, 232.73, 17.6);
+    //setupPID(&motorPID, 1,9999.9, 128.0, 232.73, 17.6);
     if DEBUG {
     Serial.println("Setup complete!");
   }

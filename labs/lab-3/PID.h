@@ -5,8 +5,8 @@
     float kP;
     float kI;
     float kD;
+    float maxAccumulatedError;
     float accumulatedError;
     float lastError;
-    float maxAccumaltedError;
   } PIDData;
 #endif
