@@ -56,7 +56,7 @@ float PIDControl(PIDData *self, float actualValue, float targetValue) {
   }
   
   float P = self->kP * error;
-  float I = self->kI * constrain(accumulatedError,-self->maxAccumulatedError,self->maxAccumulatedError);
+  float I = self->kI * constrain(accumulatedError,-self->maxAccumulatedError,self->maxAccumulatedError) * (self->samplingPeriodMS/1000);
   float D = self->kD * (error - self->error[PID_WINDOW_SIZE_SAMP-1])/(self->samplingPeriodMS/1000);
   
   return P + I + D;
