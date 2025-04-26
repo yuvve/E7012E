@@ -36,6 +36,7 @@ float PIDControl(PIDData *self, float actualValue, float targetValue) {
   float error = targetValue - actualValue;
 
   float accumulatedError = error;
+  float derivative = 0.0f;
 
   // Sliding error window
   for(int i=1; i<PID_WINDOW_SIZE_SAMP; i++) {
@@ -44,8 +45,10 @@ float PIDControl(PIDData *self, float actualValue, float targetValue) {
   }
 
   self->error[PID_WINDOW_SIZE_SAMP-1] = error;
+  accumulatedError*= (self->samplingPeriodMS/1000); // Riemann sum: \sum (T_s*e_i) = T_s*\sum(e_i)
+  derivative = (error - self->error[PID_WINDOW_SIZE_SAMP-1])/(self->samplingPeriodMS/1000);
 
-  // Resetting accumulated error when it crosses 0
+  // Resetting accumulated error when the error crosses 0
   if (ACCUMULATOR_RESET) {
     if (error * self->error[PID_WINDOW_SIZE_SAMP-1] < 0) {
       for (int i = 0; i < PID_WINDOW_SIZE_SAMP; i++) {
@@ -56,8 +59,8 @@ float PIDControl(PIDData *self, float actualValue, float targetValue) {
   }
   
   float P = self->kP * error;
-  float I = self->kI * constrain(accumulatedError,-self->maxAccumulatedError,self->maxAccumulatedError) * (self->samplingPeriodMS/1000);
-  float D = self->kD * (error - self->error[PID_WINDOW_SIZE_SAMP-1])/(self->samplingPeriodMS/1000);
+  float I = self->kI * constrain(accumulatedError,-self->maxAccumulatedError,self->maxAccumulatedError);
+  float D = self->kD * derivative;
   
   return P + I + D;
 }
