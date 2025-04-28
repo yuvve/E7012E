@@ -6,7 +6,7 @@ void setupPID(PIDData *self, float samplingPeriodMS, float maxAccumulatedError, 
     .kP = kP,
     .kI = kI,
     .kD = kD,
-    .maxAccumulatedError = 0.0f,
+    .maxAccumulatedError = maxAccumulatedError,
     .error = {0.0f},
   };
   if DEBUG {
@@ -17,11 +17,13 @@ void setupPID(PIDData *self, float samplingPeriodMS, float maxAccumulatedError, 
 }
 
 void resetPID(PIDData *self) {
+  noInterrupts();
   for (int i = 0; i < PID_WINDOW_SIZE_SAMP; i++) {
     self->error[i] = 0.0f;
   }
+  interrupts();
   if (DEBUG) {
-    Serial.println("Resetting PID");
+    Serial.println("PID Reset!");
   }
 }
 
@@ -44,9 +46,9 @@ float PIDControl(PIDData *self, float actualValue, float targetValue) {
     self->error[i-1] = self->error[i];
   }
 
-  self->error[PID_WINDOW_SIZE_SAMP-1] = error;
   accumulatedError*= (self->samplingPeriodMS/1000); // Riemann sum: \sum (T_s*e_i) = T_s*\sum(e_i)
   derivative = (error - self->error[PID_WINDOW_SIZE_SAMP-1])/(self->samplingPeriodMS/1000);
+  self->error[PID_WINDOW_SIZE_SAMP-1] = error;
 
   // Resetting accumulated error when the error crosses 0
   if (ACCUMULATOR_RESET) {
@@ -75,6 +77,7 @@ void adjustP(PIDData *self, float kP) {
 
 void adjustI(PIDData *self, float kI) {
   self->kI = kI;
+  resetPID(self);
   if (DEBUG) {
     Serial.print("Changing PID kI to: ");
     Serial.println(kI);

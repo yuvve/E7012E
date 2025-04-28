@@ -23,8 +23,12 @@
   #define STEERING_PIN 10
   
   // PID settings
+  #define START_KP 10.0
+  #define START_KI 20.0
+  #define START_KD 3.0
+  #define MAX_ACCUM_ERROR 100.0
   #define PID_SAMPLING_FREQUENCY 500
-  #define PID_WINDOW_SIZE_SEC 5
+  #define PID_WINDOW_SIZE_SEC 10
   #define PID_WINDOW_SIZE_SAMP PID_WINDOW_SIZE_SEC*PID_SAMPLING_FREQUENCY
   #define ACCUMULATOR_RESET false
 
