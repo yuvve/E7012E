@@ -19,7 +19,7 @@ Command parseSerialInput(const char* input) {
 }
 
 void readSerial(Stream& serialPort) {
-  static char input[SERIAL_BUFFER_SIZE];
+  static char input[SERIAL_INPUT_BUFFER_SIZE];
   static size_t index = 0;
 
   while (serialPort.available()) {
@@ -51,7 +51,7 @@ void writeSerial(Stream& serialPort, const char* message) {
 
 void sendFeedback() {
   float currentSpeed = getSpeed();
-  char message[SERIAL_BUFFER_SIZE];
+  char message[SERIAL_INPUT_BUFFER_SIZE];
   snprintf(message, sizeof(message), "%.2f %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle, motorTargetRPMPercent);
 
   writeSerial(Serial1, message);
