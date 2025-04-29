@@ -14,8 +14,7 @@ void setupSerialRock(int baud) {
 
 Command parseSerialInput(const char* input) {
   char cmd = input[0];
-  float value = atof(input + 1); // Convert the rest of the string to an integer
-  return Command {cmd, value};
+  float value = atof(input + 1); // Convert the rest of the string to a floating-point number
 }
 
 void readSerial(Stream& serialPort) {
