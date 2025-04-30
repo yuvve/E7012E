@@ -1,11 +1,9 @@
 Servo motor;
 
 void setupMotor(int pin) {
-    motor.attach(pin,1000,2000);
-    motor.writeMicroseconds(1500);
-  if DEBUG {
-      Serial.println("Motor initialized");
-  }
+  motor.attach(pin,1000,2000);
+  motor.writeMicroseconds(1500);
+  DEBUG_PRINTLN("Motor initialized");
 }
 
 /**

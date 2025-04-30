@@ -12,9 +12,7 @@ void setupSpeedSensor(unsigned int pin) {
   pinMode(pin, INPUT);
   speedSensor = {micros(), 0, 0};
   attachInterrupt(digitalPinToInterrupt(pin), speedSensorISR, RISING); 
-  if DEBUG {
-    Serial.println("Speed sensor initialized");
-  }
+  DEBUG_PRINTLN("Speed sensor initialized");
 }
 
 void setupProximitySensor(uint triggerPin, uint echoPin) {
@@ -27,7 +25,7 @@ void setupProximitySensor(uint triggerPin, uint echoPin) {
   proximitySensorData.tTriggered = 0;
 
   attachInterrupt(digitalPinToInterrupt(echoPin), proximitySensorISR, CHANGE);
-  Serial.println("Proximity sensor initialized");
+  DEBUG_PRINTLN("Proximity sensor initialized");
 }
 
 void speedSensorISR() {
@@ -73,20 +71,14 @@ void sendProximityPulse() {
       proximitySensorData.tTriggered = currentTime;
       digitalWrite(PROXIMITY_TRIGGER_PIN, HIGH); // Start the pulse
       proximityTriggerFlag = true;
-      if DEBUG {
-        Serial.print("Trigger pulse sent at: ");
-        Serial.println(currentTime);
-      }
+      DEBUG_PRINTF("Trigger pulse sent at: %d", currentTime);
   }
 
   // If the pulse is HIGH, turn it LOW after 10us
   if (proximityTriggerFlag && (currentTime - proximitySensorData.tTriggered >= PROXIMITY_PULSE_DURATION_US)) {
       digitalWrite(PROXIMITY_TRIGGER_PIN, LOW); // Stop the pulse
       proximityTriggerFlag = false;
-      if DEBUG {
-        Serial.print("Trigger pulse stopped at: ");
-        Serial.println(currentTime);
-      }
+      DEBUG_PRINTF("Trigger pulse stopped at: %d", currentTime);
   }
 }
 
@@ -94,8 +86,5 @@ void calculateProximityRange() {
   int width = proximitySensorData.tEchoEnd - proximitySensorData.tEchoStart;
   float range = width * (SPEED_OF_SOUND_CM_US/2);
   proximitySensorData.range = range;
-  if DEBUG {
-    Serial.print("Proximity range: ");
-    Serial.println(range);
-  }
+  DEBUG_PRINTF("Proximity range: %f cm", range);
 }

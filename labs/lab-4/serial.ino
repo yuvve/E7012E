@@ -1,15 +1,11 @@
 void setupSerialUSB(int baud) {
   Serial.begin(baud);
-  if DEBUG {
-      Serial.println("USB Serial initialized");
-  }
+  DEBUG_PRINTLN("USB Serial initialized");
 }
 
 void setupSerialRock(int baud) {
   Serial1.begin(baud);
-  if DEBUG {
-    Serial.println("Serial to Rock initialized");
-  }
+  DEBUG_PRINTLN("Rock Serial initialized");
 }
 
 Command parseSerialInput(const char* input) {
@@ -56,9 +52,7 @@ void readSerial(Stream& serialPort) {
   while (serialPort.available()) {
     char c = serialPort.read();
     
-    if (DEBUG) {
-      Serial.print(c);
-    }
+    DEBUG_PRINT(c);
 
     if (c == '\n') {
       input[index] = '\0'; // Null-terminate the string
@@ -68,16 +62,9 @@ void readSerial(Stream& serialPort) {
       input[index++] = c;
     } else { // Buffer overflow 
       index = 0;
-      if DEBUG {
-        Serial.println("Buffer overflow, resetting index");
-      }
+      DEBUG_PRINTLN("Buffer overflow, resetting index");
     }
   }
-}
-
-void writeSerial(Stream& serialPort, const char* message) {
-  serialPort.println(message);
-  serialPort.flush();
 }
 
 void sendFeedback() {
@@ -85,8 +72,6 @@ void sendFeedback() {
   char message[SERIAL_INPUT_BUFFER_SIZE];
   snprintf(message, sizeof(message), "%.2f %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle, motorTargetRPMPercent);
 
-  writeSerial(Serial1, message);
-  if (DEBUG) {
-    writeSerial(Serial, message);
-  }
+  Serial1.print(message);
+  DEBUG_PRINT(message);
 }

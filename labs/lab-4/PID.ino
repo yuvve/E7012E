@@ -14,6 +14,9 @@ void setupPID(PIDData *self, float samplingPeriodMS, float maxAccumulatedError, 
     Serial.print(samplingPeriodMS);
     Serial.println(" ms");
   }
+  DEBUG_PRINTF("PID initialized with kP: %.2f, kI: %.2f, kD: %.2f\n", kP, kI, kD);
+  DEBUG_PRINTF("PID initialized with maxAccumulatedError: %.2f\n", maxAccumulatedError);
+  DEBUG_PRINTF("PID initialized with samplingPeriodMS: %.2f\n", samplingPeriodMS);
 }
 
 void resetPID(PIDData *self) {
@@ -22,9 +25,7 @@ void resetPID(PIDData *self) {
     self->error[i] = 0.0f;
   }
   interrupts();
-  if (DEBUG) {
-    Serial.println("PID Reset!");
-  }
+  DEBUG_PRINTLN("PID Reset!");
 }
 
 /**
@@ -69,25 +70,16 @@ float PIDControl(PIDData *self, float actualValue, float targetValue) {
 
 void adjustP(PIDData *self, float kP) {
   self->kP = kP;
-  if (DEBUG) {
-    Serial.print("Changing PID kP to: ");
-    Serial.println(kP);
-  }
+  DEBUG_PRINTF("PID kP changed to: %.2f\n", kP);
 }
 
 void adjustI(PIDData *self, float kI) {
   self->kI = kI;
   resetPID(self);
-  if (DEBUG) {
-    Serial.print("Changing PID kI to: ");
-    Serial.println(kI);
-  }
+  DEBUG_PRINTF("PID kI changed to: %.2f\n", kI);
 }
 
 void adjustD(PIDData *self, float kD) {
   self->kD = kD;
-    if (DEBUG) {
-    Serial.print("Changing PID kD to: ");
-    Serial.println(kD);
-  }
+  DEBUG_PRINTF("PID kD changed to: %.2f\n", kD);
 }
