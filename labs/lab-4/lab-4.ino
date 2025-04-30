@@ -29,9 +29,7 @@ void setup() {
   setupSpeedSensor(SPEED_SENSOR_PIN);
   setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, START_KP, START_KI, START_KD);
   setupProximitySensor(PROXIMITY_TRIGGER_PIN, PROXIMITY_ECHO_PIN);
-  if DEBUG {
-    Serial.println("Setup complete!");
-  }
+  DEBUG_PRINTLN("Setup complete!");
 }
 
 // Interrupt handler for timer interrupt channel 0

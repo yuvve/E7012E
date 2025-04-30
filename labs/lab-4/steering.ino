@@ -3,18 +3,13 @@
 Servo steering;
 
 void setupSteering(unsigned int pin) {
-    steering.attach(pin);
-    steering.write(90);
-  if DEBUG {
-    Serial.println("Steering initialized");
-  }
+  steering.attach(pin);
+  steering.write(90);
+  DEBUG_PRINTLN("Steering initialized");
 }
 
 void changeSteeringAngle(int angle) {
   int correctedValue = map(angle, -90, 90, 0, 100);
   steering.write(correctedValue);
-  if DEBUG {    
-    Serial.print("Changing angle to: ");
-    Serial.println(correctedValue);
-  }
+  DEBUG_PRINTF("Changing angle to: %d", correctedValue);
 }
