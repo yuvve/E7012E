@@ -22,9 +22,9 @@ void setupProximitySensor(uint triggerPin, uint echoPin) {
   pinMode(echoPin, INPUT);
 
   proximitySensorData.range = 0;
-  proximitySensorData.t0 = 0;
-  proximitySensorData.t1 = 0;
-  proximitySensorData.t_triggered = 0;
+  proximitySensorData.tEchoStart = 0;
+  proximitySensorData.tEchoEnd = 0;
+  proximitySensorData.tTriggered = 0;
 
   attachInterrupt(digitalPinToInterrupt(echoPin), proximitySensorISR, CHANGE);
   Serial.println("Proximity sensor initialized");
@@ -37,9 +37,9 @@ void speedSensorISR() {
 void proximitySensorISR() {
   noInterrupts();
   if (digitalRead(PROXIMITY_ECHO_PIN)) {
-    proximitySensorData.t0 = micros();    // Rising edge
+    proximitySensorData.tEchoStart = micros();    // Rising edge
   } else {
-    proximitySensorData.t1 = micros();    // Falling edge
+    proximitySensorData.tEchoEnd = micros();    // Falling edge
     proximityEchoFlag = true;
   }
   interrupts();
@@ -69,8 +69,8 @@ void sendProximityPulse() {
   uint currentTime = micros();
 
   // Check if it is time to send another pulse
-  if (!proximityTriggerFlag &&(currentTime - proximitySensorData.t_triggered >= PROXIMITY_PULSE_INTERVAL_US)) {
-      proximitySensorData.t_triggered = currentTime;
+  if (!proximityTriggerFlag &&(currentTime - proximitySensorData.tTriggered >= PROXIMITY_PULSE_INTERVAL_US)) {
+      proximitySensorData.tTriggered = currentTime;
       digitalWrite(PROXIMITY_TRIGGER_PIN, HIGH); // Start the pulse
       proximityTriggerFlag = true;
       if DEBUG {
@@ -80,7 +80,7 @@ void sendProximityPulse() {
   }
 
   // If the pulse is HIGH, turn it LOW after 10us
-  if (proximityTriggerFlag && (currentTime - proximitySensorData.t_triggered >= PROXIMITY_PULSE_DURATION_US)) {
+  if (proximityTriggerFlag && (currentTime - proximitySensorData.tTriggered >= PROXIMITY_PULSE_DURATION_US)) {
       digitalWrite(PROXIMITY_TRIGGER_PIN, LOW); // Stop the pulse
       proximityTriggerFlag = false;
       if DEBUG {
@@ -91,7 +91,7 @@ void sendProximityPulse() {
 }
 
 void calculateProximityRange() {
-  int width = proximitySensorData.t1 - proximitySensorData.t0;
+  int width = proximitySensorData.tEchoEnd - proximitySensorData.tEchoStart;
   float range = width * (SPEED_OF_SOUND_CM_US/2);
   proximitySensorData.range = range;
   if DEBUG {

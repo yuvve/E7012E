@@ -11,9 +11,9 @@
   } SpeedSensor;
   
   typedef struct {
-    int t_triggered;
-    int t0;
-    int t1;
+    int tTriggered;
+    int tEchoStart;
+    int tEchoEnd;
     float range;
   } ProximitySensorData;
 #endif
