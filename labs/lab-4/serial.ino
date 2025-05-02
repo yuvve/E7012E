@@ -72,6 +72,6 @@ void sendFeedback() {
   char message[SERIAL_INPUT_BUFFER_SIZE];
   snprintf(message, sizeof(message), "%.2f %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle, motorTargetRPMPercent);
 
-  Serial1.print(message);
-  DEBUG_PRINT(message);
+  Serial1.println(message);
+  DEBUG_PRINTLN(message);
 }
