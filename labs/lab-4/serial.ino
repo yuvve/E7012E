@@ -51,7 +51,6 @@ void readSerial(Stream& serialPort) {
 
   while (serialPort.available()) {
     char c = serialPort.read();
-    
     DEBUG_PRINT(c);
 
     if (c == '\n') {
@@ -69,8 +68,11 @@ void readSerial(Stream& serialPort) {
 
 void sendFeedback() {
   float currentSpeed = getSpeed();
+  float leftRange = getProximityRange(leftProximitySensor);
+  float rightRange = getProximityRange(rightProximitySensor);
   char message[SERIAL_INPUT_BUFFER_SIZE];
-  snprintf(message, sizeof(message), "%.2f %.2f %.2f %.2f", currentSpeed, targetSpeed, targetAngle, motorTargetRPMPercent);
+  snprintf(message, sizeof(message), "%.2f %.2f %.2f %.2f %.2f %.2f", 
+    currentSpeed, targetSpeed, targetAngle, motorTargetRPMPercent, leftRange, rightRange);
 
   Serial1.println(message);
   DEBUG_PRINTLN(message);

@@ -2,7 +2,7 @@
 #define SENSORS_H
   typedef struct {
     float speed;
-  } SensorData;
+  } volatile SensorData;
   
   typedef struct {
     uint32_t t0;
@@ -21,10 +21,15 @@
     uint tEchoStart;
     uint tEchoEnd;
     float range;
-  } EchoData;
+  } volatile EchoData;
   
   typedef struct {
     TriggerData triggerData;
     EchoData echoData;
   } ProximitySensor;
+
+  enum TriggerState { 
+    TRIGGER_LEFT, 
+    TRIGGER_RIGHT 
+  };
 #endif

@@ -23,7 +23,7 @@ void setupTimerInterruptChannel0(int frequencyHz) {
 
   NVIC_EnableIRQ(TC6_IRQn);
   
-  DEBUG_PRINTF("Timer channel 0 initialized with frequency: %d\n Hz", frequencyHz);
+  DEBUG_PRINTF("Timer channel 0 initialized with frequency: %d Hz", frequencyHz);
 }
 
 void setupTimerInterruptChannel1(int frequencyHz) {
@@ -45,7 +45,7 @@ void setupTimerInterruptChannel1(int frequencyHz) {
 
   NVIC_EnableIRQ(TC7_IRQn);
   
-  DEBUG_PRINTF("Timer channel 1 initialized with frequency: %d\n Hz", frequencyHz);
+  DEBUG_PRINTF("Timer channel 1 initialized with frequency: %d Hz", frequencyHz);
 }
 
 void setupTimerInterruptChannel2(int frequencyHz) {
@@ -67,5 +67,5 @@ void setupTimerInterruptChannel2(int frequencyHz) {
 
   NVIC_EnableIRQ(TC8_IRQn);
   
-  DEBUG_PRINTF("Timer channel 2 initialized with frequency: %d\n Hz", frequencyHz);
+  DEBUG_PRINTF("Timer channel 2 initialized with frequency: %d Hz", frequencyHz);
 }

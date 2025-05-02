@@ -46,7 +46,6 @@
   #define ACCUMULATOR_RESET false
 
   // Proximity sensor settings
-  #define PROXIMITY_PULSE_INTERVAL_US 1000000*2 // 2s
   #define PROXIMITY_PULSE_DURATION_US 10
   #define RIGHT_PROXIMITY_ECHO_PIN 50
   #define RIGHT_PROXIMITY_TRIGGER_PIN 51  
