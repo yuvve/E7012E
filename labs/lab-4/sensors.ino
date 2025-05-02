@@ -2,14 +2,9 @@
 
 SensorData sensorData;
 SpeedSensor speedSensor;
-TriggerData rightTriggerData, leftTriggerData;
-volatile EchoData rightEchoData, leftEchoData;
-ProximitySensor rightProximitySensor, leftProximitySensor;
-enum TriggerState { TRIGGER_LEFT, TRIGGER_RIGHT };
-TriggerState triggerState;
 
 void setupSensorData() {
-  sensorData = {0.0f};
+  sensorData.speed = 0.0f;
 }
 
 void setupSpeedSensor(unsigned int pin) {
@@ -43,30 +38,19 @@ float getSpeed() {
   return speed;
 }
 
-void setupRightProximitySensor() {
-  pinMode(RIGHT_PROXIMITY_TRIGGER_PIN, OUTPUT);
-  pinMode(RIGHT_PROXIMITY_ECHO_PIN, INPUT);
+void setupProximitySensor(uint echoPin, uint triggerPin, ProximitySensor& sensor, void (*isr)()) {
+  pinMode(triggerPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  attachInterrupt(digitalPinToInterrupt(echoPin), isr, CHANGE);
 
-  rightProximitySensor.triggerData = {RIGHT_PROXIMITY_TRIGGER_PIN, false, 0};
-  rightProximitySensor.echoData = {RIGHT_PROXIMITY_ECHO_PIN, 0, 0, 0.0f};
-  attachInterrupt(digitalPinToInterrupt(RIGHT_PROXIMITY_ECHO_PIN), rightProximityISR, CHANGE);
-  DEBUG_PRINTLN("Right proximity sensor initialized");
-}
+  sensor.triggerData = {triggerPin, false, 0};
+  // Volatile fields cant be brace-initialized, so we need to do it field by field
+  sensor.echoData.echoPin = echoPin;
+  sensor.echoData.tEchoStart = 0;
+  sensor.echoData.tEchoEnd = 0;
+  sensor.echoData.range = 0.0f;
 
-void setupLeftProximitySensor() {
-  pinMode(LEFT_PROXIMITY_TRIGGER_PIN, OUTPUT);
-  pinMode(LEFT_PROXIMITY_ECHO_PIN, INPUT);
-
-  leftProximitySensor.triggerData = {LEFT_PROXIMITY_TRIGGER_PIN, false, 0};
-  leftProximitySensor.echoData = {LEFT_PROXIMITY_ECHO_PIN, 0, 0, 0.0f};
-  attachInterrupt(digitalPinToInterrupt(LEFT_PROXIMITY_ECHO_PIN), leftProximityISR, CHANGE);
-  DEBUG_PRINTLN("Left proximity sensor initialized");
-}
-
-void setupProximitySensors() {
-  setupRightProximitySensor();
-  setupLeftProximitySensor();
-  triggerState = TRIGGER_RIGHT; // Start with right sensor
+  DEBUG_PRINTF("Proximity sensor initialized with trigger pin: %d, echo pin: %d", triggerPin, echoPin);
 }
 
 // Arduino API does not support detecting the interrupt pin, so we need to use
@@ -81,20 +65,33 @@ void rightProximityISR() {
   handleProximityISR(rightProximitySensor);
 }
 
-void handleProximityISR(ProximitySensor sensor) {
-  if (digitalRead(sensor.echoData.echoPin)) {
-    sensor.echoData.tEchoStart = micros();    // Rising edge
-  } else {
-    sensor.echoData.tEchoEnd = micros();    // Falling edge
-    uint width = sensor.echoData.tEchoEnd - sensor.echoData.tEchoStart;
-    float range = width * (SPEED_OF_SOUND_CM_US / 2);
+/**
+  * Handle the proximity sensor interrupt. The function will read the 
+  * rising and falling edge of the echo pin and calculate the range.
+ */
+void handleProximityISR(ProximitySensor& sensor) {
+  noInterrupts(); 
+  uint now = micros();
+  if (digitalRead(sensor.echoData.echoPin)) {  // Rising edge
+    sensor.echoData.tEchoStart = now;    
+  } else { // Falling edge
+    sensor.echoData.tEchoEnd = now;
+    uint width = now - sensor.echoData.tEchoStart;
+    float range = width * SPEED_OF_SOUND_CM_US/2;
     sensor.echoData.range = range;
   }
+  interrupts();
 }
 
+/**
+  * Trigger the proximity sensor by sending a pulse to the trigger pin.
+  * The function will return true when the trigger is complete. 
+  * The function will alternate between left and righ sensors, 
+  * to prevent interference.
+**/
 bool triggerProximitySensor() {
-  uint32_t now = micros();
   ProximitySensor &sensor = (triggerState == TRIGGER_LEFT) ? leftProximitySensor : rightProximitySensor;
+  uint now = micros();
 
   if (!sensor.triggerData.isTriggered) {
     digitalWrite(sensor.triggerData.triggerPin, HIGH);
@@ -111,4 +108,11 @@ bool triggerProximitySensor() {
   }
 
   return false; 
+}
+
+float getProximityRange(ProximitySensor& sensor) {
+  noInterrupts();
+  float range = sensor.echoData.range;
+  interrupts();
+  return range;
 }
