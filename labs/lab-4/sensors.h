@@ -9,11 +9,22 @@
     uint32_t pulses0;
     int pulses1;
   } SpeedSensor;
+
+  typedef struct {
+    uint triggerPin;
+    bool isTriggered;
+    uint tTriggered;
+  } TriggerData;
+
+  typedef struct {
+    uint echoPin;
+    uint tEchoStart;
+    uint tEchoEnd;
+    float range;
+  } EchoData;
   
   typedef struct {
-    int tTriggered;
-    int tEchoStart;
-    int tEchoEnd;
-    float range;
-  } ProximitySensorData;
+    TriggerData triggerData;
+    EchoData echoData;
+  } ProximitySensor;
 #endif

@@ -2,7 +2,11 @@
 
 SensorData sensorData;
 SpeedSensor speedSensor;
-volatile ProximitySensorData proximitySensorData;
+TriggerData rightTriggerData, leftTriggerData;
+volatile EchoData rightEchoData, leftEchoData;
+ProximitySensor rightProximitySensor, leftProximitySensor;
+enum TriggerState { TRIGGER_LEFT, TRIGGER_RIGHT };
+TriggerState triggerState;
 
 void setupSensorData() {
   sensorData = {0.0f};
@@ -15,32 +19,8 @@ void setupSpeedSensor(unsigned int pin) {
   DEBUG_PRINTLN("Speed sensor initialized");
 }
 
-void setupProximitySensor(uint triggerPin, uint echoPin) {
-  pinMode(triggerPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-
-  proximitySensorData.range = 0;
-  proximitySensorData.tEchoStart = 0;
-  proximitySensorData.tEchoEnd = 0;
-  proximitySensorData.tTriggered = 0;
-
-  attachInterrupt(digitalPinToInterrupt(echoPin), proximitySensorISR, CHANGE);
-  DEBUG_PRINTLN("Proximity sensor initialized");
-}
-
 void speedSensorISR() {
   speedSensor.pulses1++;
-}
-
-void proximitySensorISR() {
-  noInterrupts();
-  if (digitalRead(PROXIMITY_ECHO_PIN)) {
-    proximitySensorData.tEchoStart = micros();    // Rising edge
-  } else {
-    proximitySensorData.tEchoEnd = micros();    // Falling edge
-    proximityEchoFlag = true;
-  }
-  interrupts();
 }
 
 // Calculates the new current speed and update the internal data structure
@@ -63,28 +43,72 @@ float getSpeed() {
   return speed;
 }
 
-void sendProximityPulse() {
-  uint currentTime = micros();
+void setupRightProximitySensor() {
+  pinMode(RIGHT_PROXIMITY_TRIGGER_PIN, OUTPUT);
+  pinMode(RIGHT_PROXIMITY_ECHO_PIN, INPUT);
 
-  // Check if it is time to send another pulse
-  if (!proximityTriggerFlag &&(currentTime - proximitySensorData.tTriggered >= PROXIMITY_PULSE_INTERVAL_US)) {
-      proximitySensorData.tTriggered = currentTime;
-      digitalWrite(PROXIMITY_TRIGGER_PIN, HIGH); // Start the pulse
-      proximityTriggerFlag = true;
-      DEBUG_PRINTF("Trigger pulse sent at: %d", currentTime);
-  }
+  rightProximitySensor.triggerData = {RIGHT_PROXIMITY_TRIGGER_PIN, false, 0};
+  rightProximitySensor.echoData = {RIGHT_PROXIMITY_ECHO_PIN, 0, 0, 0.0f};
+  attachInterrupt(digitalPinToInterrupt(RIGHT_PROXIMITY_ECHO_PIN), rightProximityISR, CHANGE);
+  DEBUG_PRINTLN("Right proximity sensor initialized");
+}
 
-  // If the pulse is HIGH, turn it LOW after 10us
-  if (proximityTriggerFlag && (currentTime - proximitySensorData.tTriggered >= PROXIMITY_PULSE_DURATION_US)) {
-      digitalWrite(PROXIMITY_TRIGGER_PIN, LOW); // Stop the pulse
-      proximityTriggerFlag = false;
-      DEBUG_PRINTF("Trigger pulse stopped at: %d", currentTime);
+void setupLeftProximitySensor() {
+  pinMode(LEFT_PROXIMITY_TRIGGER_PIN, OUTPUT);
+  pinMode(LEFT_PROXIMITY_ECHO_PIN, INPUT);
+
+  leftProximitySensor.triggerData = {LEFT_PROXIMITY_TRIGGER_PIN, false, 0};
+  leftProximitySensor.echoData = {LEFT_PROXIMITY_ECHO_PIN, 0, 0, 0.0f};
+  attachInterrupt(digitalPinToInterrupt(LEFT_PROXIMITY_ECHO_PIN), leftProximityISR, CHANGE);
+  DEBUG_PRINTLN("Left proximity sensor initialized");
+}
+
+void setupProximitySensors() {
+  setupRightProximitySensor();
+  setupLeftProximitySensor();
+  triggerState = TRIGGER_RIGHT; // Start with right sensor
+}
+
+// Arduino API does not support detecting the interrupt pin, so we need to use
+// sepparate ISR for each pin
+void leftProximityISR() {
+  handleProximityISR(leftProximitySensor);
+}
+
+// Arduino API does not support detecting the interrupt pin, so we need to use
+// sepparate ISR for each pin
+void rightProximityISR() {
+  handleProximityISR(rightProximitySensor);
+}
+
+void handleProximityISR(ProximitySensor sensor) {
+  if (digitalRead(sensor.echoData.echoPin)) {
+    sensor.echoData.tEchoStart = micros();    // Rising edge
+  } else {
+    sensor.echoData.tEchoEnd = micros();    // Falling edge
+    uint width = sensor.echoData.tEchoEnd - sensor.echoData.tEchoStart;
+    float range = width * (SPEED_OF_SOUND_CM_US / 2);
+    sensor.echoData.range = range;
   }
 }
 
-void calculateProximityRange() {
-  int width = proximitySensorData.tEchoEnd - proximitySensorData.tEchoStart;
-  float range = width * (SPEED_OF_SOUND_CM_US/2);
-  proximitySensorData.range = range;
-  DEBUG_PRINTF("Proximity range: %f cm", range);
+bool triggerProximitySensor() {
+  uint32_t now = micros();
+  ProximitySensor &sensor = (triggerState == TRIGGER_LEFT) ? leftProximitySensor : rightProximitySensor;
+
+  if (!sensor.triggerData.isTriggered) {
+    digitalWrite(sensor.triggerData.triggerPin, HIGH);
+    sensor.triggerData.tTriggered = now;
+    sensor.triggerData.isTriggered = true;
+  } 
+  else if (now - sensor.triggerData.tTriggered >= PROXIMITY_PULSE_DURATION_US) {
+    digitalWrite(sensor.triggerData.triggerPin, LOW);
+    sensor.triggerData.isTriggered = false;
+
+    // Alternate to the other sensor for next trigger
+    triggerState = (triggerState == TRIGGER_LEFT) ? TRIGGER_RIGHT : TRIGGER_LEFT;
+    return true;
+  }
+
+  return false; 
 }
