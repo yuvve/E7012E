@@ -13,6 +13,8 @@ def display(vals, camera_vals, lock, camera_lock):
         print(f"desired_speed: {vals['desired_speed']}")
         print(f"desired_angle: {vals['desired_angle']}")
         print(f"pid_output: {vals['pid_output']}\n")
+        print(f"left_distance: {vals['left_distance']}")
+        print(f"right_distance {vals['right_distance']}\n")
 
     with camera_lock:
         print("Camera Values:")
