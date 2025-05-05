@@ -36,24 +36,17 @@
   #define STEERING_PIN 10
   
   // PID settings
-  #define START_KP 10.0
-  #define START_KI 20.0
-  #define START_KD 3.0
+  #define KP_SPEED 10.0
+  #define KI_SPEED 20.0
+  #define KD_SPEED 3.0
+  #define KP_DIST 50.0
+  #define KI_DIST 0.5
+  #define KD_DIST 3.0
   #define MAX_ACCUM_ERROR 100.0
   #define PID_SAMPLING_FREQUENCY 500
   #define PID_WINDOW_SIZE_SEC 10
   #define PID_WINDOW_SIZE_SAMP PID_WINDOW_SIZE_SEC*PID_SAMPLING_FREQUENCY
-  #define ACCUMULATOR_RESET false
-
-  // Steering PID settings
-  #define START_KP_2 10.0
-  #define START_KI_2 20.0
-  #define START_KD_2 3.0
-  #define MAX_ACCUM_ERROR_2 100.0
-  #define PID_SAMPLING_FREQUENCY_2 500
-  #define PID_WINDOW_SIZE_SEC_2 10
-  #define PID_WINDOW_SIZE_SAMP_2 PID_WINDOW_SIZE_SEC*PID_SAMPLING_FREQUENCY
-  #define ACCUMULATOR_RESET_2 false
+  #define ACCUMULATOR_RESET false 
 
   // Proximity sensor settings
   #define PROXIMITY_PULSE_DURATION_US 10
