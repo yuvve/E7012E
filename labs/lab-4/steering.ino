@@ -9,7 +9,7 @@ void setupSteering(unsigned int pin) {
 }
 
 void changeSteeringAngle(int angle) {
-  int correctedValue = map(angle, -90, 90, 0, 100);
+  int correctedValue = constrain(angle, 0, 110);
   steering.write(correctedValue);
   DEBUG_PRINTF("Changing angle to: %d", correctedValue);
 }
