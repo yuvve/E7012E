@@ -10,7 +10,7 @@ volatile bool speedFlag = false;
 volatile bool sendFeedbackFlag = false;
 volatile bool triggerNextProximityFlag = false;
 volatile float targetSpeed = 0; 
-volatile float targetWallDistance = 2;
+volatile float targetWallDistance = 100;
 volatile float motorActuation = 0;
 volatile float steeringActuation = 0;
 volatile bool motorStarted = false;
@@ -30,10 +30,10 @@ void setup() {
   setupSteering(STEERING_PIN);
   setupMotor(MOTOR_PIN);
   setupSpeedSensor(SPEED_SENSOR_PIN);
-  setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, START_KP, START_KI, START_KD);
+  setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_SPEED, KI_SPEED, KD_SPEED);
   setupProximitySensor(RIGHT_PROXIMITY_ECHO_PIN, RIGHT_PROXIMITY_TRIGGER_PIN, rightProximitySensor, rightProximityISR);
   setupProximitySensor(LEFT_PROXIMITY_ECHO_PIN, LEFT_PROXIMITY_TRIGGER_PIN, leftProximitySensor, leftProximityISR);
-  setupPID(&distancePID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, START_KP, START_KI, START_KD);
+  setupPID(&distancePID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_DIST, KI_DIST, KD_DIST);
   DEBUG_PRINTLN("Setup complete!");
 }
 
