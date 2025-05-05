@@ -24,8 +24,9 @@ def main():
             if camera_vals['color'] == "red":
                 send("M0")
 
-            if camera_vals['color'] == "green" and camera_vals['shape'] == "circle":
-                send("M0.5")
+            if camera_vals['color'] == "green":
+                if camera_vals['shape'] == "circle":
+                   send("M0.5")
 
             try:
                 cmd = cmd_q.get_nowait()
