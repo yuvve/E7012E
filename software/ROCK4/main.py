@@ -21,6 +21,12 @@ def main():
             clear()
             display(vals, camera_vals, val_lock, camera_val_lock)
 
+            if camera_vals['color'] == "red":
+                send("M0")
+
+            if camera_vals['color'] == "green":
+                send("M0.5")
+
             try:
                 cmd = cmd_q.get_nowait()
             except queue.Empty:
@@ -31,12 +37,6 @@ def main():
 
             #print(cmd)
             send(cmd)
-
-            if camera_vals['color'] == "red" and camera_vals["shape"] == "circle":
-                send("M0")
-
-            if camera_vals['color'] == "green":
-                send("M0.5")
 
     except KeyboardInterrupt:
         pass
