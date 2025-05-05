@@ -18,8 +18,8 @@ void processSerialInput(const char* input) {
   Command cmd = parseSerialInput(input);
   switch (cmd.cmd) {
     case 'M':
-      targetSpeed = cmd.value;
-      if (targetSpeed == 0){
+      targetMaxSpeed = cmd.value;
+      if (targetMaxSpeed == 0){
         motorStarted = false;
         setTargetMotorRPMPercent(0);
         resetPID(&motorPID);

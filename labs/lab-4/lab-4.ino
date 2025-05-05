@@ -9,7 +9,8 @@ volatile bool distancePidFlag = false;
 volatile bool speedFlag = false;
 volatile bool sendFeedbackFlag = false;
 volatile bool triggerNextProximityFlag = false;
-volatile float targetSpeed = 0; 
+volatile float targetSpeed = 0;
+volatile float targetMaxSpeed = 0; 
 volatile float targetCenterOffset = 0;
 volatile float motorActuation = 0;
 volatile float steeringActuation = 0;
@@ -65,6 +66,8 @@ void loop() {
       speedFlag = false;
     }
     if (pidFlag && motorStarted) {
+      float distanceToFrontWall = getProximityRange(forwardProximitySensor);
+      targetSpeed = speedLimiter(targetMaxSpeed, distanceToFrontWall);
       motorActuation = PIDControl(&motorPID, getSpeed(), targetSpeed);
       setTargetMotorRPMPercent(motorActuation);
       pidFlag = false;
