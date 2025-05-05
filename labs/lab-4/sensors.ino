@@ -65,6 +65,12 @@ void rightProximityISR() {
   handleProximityISR(rightProximitySensor);
 }
 
+// Arduino API does not support detecting the interrupt pin, so we need to use
+// sepparate ISR for each pin
+void forwardProximityISR() {
+  handleProximityISR(forwardProximitySensor);
+}
+
 /**
   * Handle the proximity sensor interrupt. The function will read the 
   * rising and falling edge of the echo pin and calculate the range.
@@ -90,20 +96,33 @@ void handleProximityISR(ProximitySensor& sensor) {
   * to prevent interference.
 **/
 bool triggerProximitySensor() {
-  ProximitySensor &sensor = (triggerState == TRIGGER_LEFT) ? leftProximitySensor : rightProximitySensor;
+  ProximitySensor* sensor;
+  switch (triggerState) {
+    case TRIGGER_LEFT:
+      sensor = &leftProximitySensor;
+      triggerState = TRIGGER_RIGHT;
+      break;
+    case TRIGGER_RIGHT:
+      sensor = &rightProximitySensor;
+      triggerState = TRIGGER_FORWARD;
+      break;
+    case TRIGGER_FORWARD:
+      sensor = &forwardProximitySensor;
+      triggerState = TRIGGER_LEFT;
+      break;
+  }
+
   uint now = micros();
 
-  if (!sensor.triggerData.isTriggered) {
-    digitalWrite(sensor.triggerData.triggerPin, HIGH);
-    sensor.triggerData.tTriggered = now;
-    sensor.triggerData.isTriggered = true;
+  if (!sensor->triggerData.isTriggered) {
+    digitalWrite(sensor->triggerData.triggerPin, HIGH);
+    sensor->triggerData.tTriggered = now;
+    sensor->triggerData.isTriggered = true;
   } 
-  else if (now - sensor.triggerData.tTriggered >= PROXIMITY_PULSE_DURATION_US) {
-    digitalWrite(sensor.triggerData.triggerPin, LOW);
-    sensor.triggerData.isTriggered = false;
+  else if (now - sensor->triggerData.tTriggered >= PROXIMITY_PULSE_DURATION_US) {
+    digitalWrite(sensor->triggerData.triggerPin, LOW);
+    sensor->triggerData.isTriggered = false;
 
-    // Alternate to the other sensor for next trigger
-    triggerState = (triggerState == TRIGGER_LEFT) ? TRIGGER_RIGHT : TRIGGER_LEFT;
     return true;
   }
 
