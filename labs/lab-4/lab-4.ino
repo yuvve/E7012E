@@ -10,7 +10,7 @@ volatile bool speedFlag = false;
 volatile bool sendFeedbackFlag = false;
 volatile bool triggerNextProximityFlag = false;
 volatile float targetSpeed = 0; 
-volatile float targetWallDistance = 100;
+volatile float targetCenterOffset = 0;
 volatile float motorActuation = 0;
 volatile float steeringActuation = 0;
 volatile bool motorStarted = false;
@@ -69,8 +69,9 @@ void loop() {
       pidFlag = false;
     }
     if (distancePidFlag) {
-      float distanceToRightWall = getProximityRange(rightProximitySensor);
-      steeringActuation = PIDControl(&distancePID, distanceToRightWall, targetWallDistance);
+      // Must check if positive offset = right or left
+      float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
+      steeringActuation = PIDControl(&distancePID, currentCenterOffset, targetCenterOffset);
       changeSteeringAngle(steeringActuation);
       distancePidFlag = false;
     }

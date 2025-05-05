@@ -28,7 +28,7 @@ void processSerialInput(const char* input) {
       }
       break;
     case 'S':
-      targetWallDistance = cmd.value;
+      targetCenterOffset = cmd.value;
       break;
     case 'P':
       adjustP(&distancePID, cmd.value);
