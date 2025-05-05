@@ -30,6 +30,7 @@
 
   enum TriggerState { 
     TRIGGER_LEFT, 
-    TRIGGER_RIGHT 
+    TRIGGER_RIGHT,
+    TRIGGER_FORWARD,
   };
 #endif

@@ -34,6 +34,7 @@
 
   // Steering settings
   #define STEERING_PIN 10
+  #define STEERING_MAX_ANGLE_DEG 15
   
   // PID settings
   #define KP_SPEED 10.0
@@ -54,5 +55,7 @@
   #define RIGHT_PROXIMITY_TRIGGER_PIN 51  
   #define LEFT_PROXIMITY_ECHO_PIN 40
   #define LEFT_PROXIMITY_TRIGGER_PIN 41
+  #define FORWARD_PROXIMITY_ECHO_PIN 30
+  #define FORWARD_PROXIMITY_TRIGGER_PIN 31
   #define SPEED_OF_SOUND_CM_US 0.0343
 #endif
