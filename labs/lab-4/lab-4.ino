@@ -5,12 +5,14 @@
 #include "constants.h"
 
 volatile bool pidFlag = false;
+volatile bool distancePidFlag = false;
 volatile bool speedFlag = false;
 volatile bool sendFeedbackFlag = false;
 volatile bool triggerNextProximityFlag = false;
 volatile float targetSpeed = 0; 
-volatile float targetAngle = 0;
-volatile float motorTargetRPMPercent = 0;
+volatile float targetWallDistance = 2;
+volatile float motorActuation = 0;
+volatile float steeringActuation = 0;
 volatile bool motorStarted = false;
 
 PIDData motorPID;
@@ -31,6 +33,7 @@ void setup() {
   setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, START_KP, START_KI, START_KD);
   setupProximitySensor(RIGHT_PROXIMITY_ECHO_PIN, RIGHT_PROXIMITY_TRIGGER_PIN, rightProximitySensor, rightProximityISR);
   setupProximitySensor(LEFT_PROXIMITY_ECHO_PIN, LEFT_PROXIMITY_TRIGGER_PIN, leftProximitySensor, leftProximityISR);
+  setupPID(&distancePID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, START_KP, START_KI, START_KD);
   DEBUG_PRINTLN("Setup complete!");
 }
 
@@ -45,6 +48,7 @@ void TC6_Handler() {
 void TC7_Handler() {
   TC_GetStatus(TC2, 1);           // Clears interrupt flag
   pidFlag = true;
+  distancePidFlag = true;
 }
 
 // Interrupt handler for timer interrupt channel 2
@@ -60,9 +64,15 @@ void loop() {
       speedFlag = false;
     }
     if (pidFlag && motorStarted) {
-      motorTargetRPMPercent = PIDControl(&motorPID, getSpeed(), targetSpeed);
-      setTargetMotorRPMPercent(motorTargetRPMPercent);
+      motorActuation = PIDControl(&motorPID, getSpeed(), targetSpeed);
+      setTargetMotorRPMPercent(motorActuation);
       pidFlag = false;
+    }
+    if (distancePidFlag) {
+      float distanceToRightWall = getProximityRange(rightProximitySensor);
+      steeringActuation = PIDControl(&distancePID, distanceToRightWall, targetWallDistance);
+      changeSteeringAngle(steeringActuation);
+      distancePidFlag = false;
     }
     if (sendFeedbackFlag) {
       sendFeedback();

@@ -28,8 +28,7 @@ void processSerialInput(const char* input) {
       }
       break;
     case 'S':
-      targetAngle = cmd.value;
-      changeSteeringAngle(cmd.value);
+      targetWallDistance = cmd.value;
       break;
     case 'P':
       adjustP(&motorPID, cmd.value);
@@ -72,7 +71,7 @@ void sendFeedback() {
   float rightRange = getProximityRange(rightProximitySensor);
   char message[SERIAL_INPUT_BUFFER_SIZE];
   snprintf(message, sizeof(message), "%.2f %.2f %.2f %.2f %.2f %.2f", 
-    currentSpeed, targetSpeed, targetAngle, motorTargetRPMPercent, leftRange, rightRange);
+    currentSpeed, targetSpeed, steeringActuation, motorActuation, leftRange, rightRange);
 
   Serial1.println(message);
   DEBUG_PRINTLN(message);
