@@ -4,7 +4,7 @@ import threading
 
 from config import PORT, BAUD, TIMEOUT
 
-vals = {"speed": "-", "desired_speed": "-", "desired_angle": "-", "pid_output": "-"}
+vals = {"speed": "-", "desired_speed": "-", "desired_angle": "-", "pid_output": "-", "left_distance": "-", "right_distance": "-"}
 val_lock = threading.Lock()
 
 _ser = serial.Serial(PORT, BAUD, timeout=TIMEOUT)
@@ -19,7 +19,7 @@ def _receive_loop():
         if len(parts) < 4:
             continue
         with val_lock:
-            vals["speed"], vals["desired_speed"], vals["desired_angle"], vals["pid_output"] = parts[:4]
+            vals["speed"], vals["desired_speed"], vals["desired_angle"], vals["pid_output"], vals["left_distance"], vals["right_distance"] = parts[:6]
 
 def start_receiver():
     t = threading.Thread(target=_receive_loop, daemon=True)
