@@ -9,10 +9,7 @@ def clear():
 def display(vals, camera_vals, lock, camera_lock):
     with lock:
         print("Serial Communication Values:")
-        print(f"speed: {vals['speed']}")
-        print(f"desired_speed: {vals['desired_speed']}")
-        print(f"desired_angle: {vals['desired_angle']}")
-        print(f"pid_output: {vals['pid_output']}\n")
+        print(f"speed: {vals['current_speed']}")
         print(f"left_distance: {vals['left_distance']}")
         print(f"right_distance {vals['right_distance']}\n")
 
