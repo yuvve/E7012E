@@ -28,14 +28,21 @@ def main():
 
             if cmd.lower() in "exit":
                 break
-            
+
             #print(cmd)
             send(cmd)
+
+            if camera_vals['color'] == "red" and camera_vals["shape"] == "circle":
+                send("M0")
+
+            if camera_vals['color'] == "green":
+                send("M0.5")
 
     except KeyboardInterrupt:
         pass
     
     finally:
+        send("M0")
         stop_camera()
         close()
         print("Goodbye!")
