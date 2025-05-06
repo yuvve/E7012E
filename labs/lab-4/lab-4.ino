@@ -72,7 +72,7 @@ void loop() {
       setTargetMotorRPMPercent(motorActuation);
       pidFlag = false;
     }
-    if (distancePidFlag) {
+    if (distancePidFlag && motorStarted) {
       // Must check if positive offset = right or left
       float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
       steeringActuation = PIDControl(&distancePID, currentCenterOffset, targetCenterOffset);
