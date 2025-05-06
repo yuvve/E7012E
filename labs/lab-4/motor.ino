@@ -30,6 +30,6 @@ float speedLimiter(float maxSpeed, float frontDistanceToWallCm) {
   if (frontDistanceToWallCm > SOFT_MIN_DISTANCE_TO_FRONT_WALL_CM) {
     return maxSpeed;
   }
-  float factor = map(frontDistanceToWallCm, 0, SOFT_MIN_DISTANCE_TO_FRONT_WALL_CM, 0, 1);
+  float factor = map(frontDistanceToWallCm, HARD_MIN_DISTANCE_TO_FRONT_WALL_CM, SOFT_MIN_DISTANCE_TO_FRONT_WALL_CM, 0, 1);
   return factor*maxSpeed;
 }
