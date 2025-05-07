@@ -28,7 +28,8 @@ void processSerialInput(const char* input) {
       }
       break;
     case 'S':
-      targetCenterOffset = cmd.value;
+      //targetCenterOffset = cmd.value;
+      freeSteering(cmd.value);
       break;
     case 'P':
       adjustP(&distancePID, cmd.value);

@@ -9,8 +9,8 @@ void setupSteering(unsigned int pin) {
 }
 
 void changeSteeringAngle(int angle) {
-  int correctedValue = map(angle, -90, 90, 40, 88);
-  correctedValue = constrain(correctedValue, 40, 88);
+  int correctedValue = map(angle, -90, 90, 0, 50);
+  correctedValue = constrain(correctedValue, 0, 50);
   steering.write(correctedValue);
 }
 

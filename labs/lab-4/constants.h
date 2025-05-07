@@ -31,8 +31,8 @@
 
   // Motor settings
   #define MOTOR_PIN 9
-  #define HARD_MIN_DISTANCE_TO_FRONT_WALL_CM 30
-  #define SOFT_MIN_DISTANCE_TO_FRONT_WALL_CM 80
+  #define HARD_MIN_DISTANCE_TO_FRONT_WALL_CM 15
+  #define SOFT_MIN_DISTANCE_TO_FRONT_WALL_CM 40
 
   // Steering settings
   #define STEERING_PIN 10
