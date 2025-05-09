@@ -10,8 +10,6 @@ volatile bool speedSensorFlag = false;
 volatile bool sendFeedbackFlag = false;
 volatile bool triggerNextProximityFlag = false;
 volatile float targetSpeed = 0;
-volatile float targetMaxSpeed = 0; 
-volatile float targetCenterOffset = 0;
 volatile float motorActuation = 0;
 volatile float steeringActuation = 0;
 volatile bool motorStarted = false;
@@ -67,15 +65,17 @@ void loop() {
     }
     if (speedPidFlag && motorStarted) {
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
-      targetSpeed = speedLimiter(targetMaxSpeed, distanceToFrontWall);
-      motorActuation = PIDControl(&motorPID, getSpeed(), targetSpeed);
+      float speed = (distanceToFrontWall>MIN_DISTANCE_TO_FRONT_WALL_CM) ? targetSpeed : 0.0;
+      motorActuation = PIDControl(&motorPID, getSpeed(), speed);
       setTargetMotorRPMPercent(motorActuation);
       speedPidFlag = false;
     }
     if (distancePidFlag && motorStarted) {
-      // Must check if positive offset = right or left
       float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
-      steeringActuation = PIDControl(&distancePID, currentCenterOffset, targetCenterOffset);
+      steeringActuation = PIDControl(&distancePID, currentCenterOffset, 0);
+      //float distanceToRightWall = getProximityRange(rightProximitySensor);
+      //steeringActuation = PIDControl(&distancePID, distanceToRightWall, STEERING_DISTANCE_TO_RIGHT_WALL_CM);
+      //steeringActuation = constrain(steeringActuation, -STEERING_MAX_ANGLE_DEG, STEERING_MAX_ANGLE_DEG);
       changeSteeringAngle(steeringActuation);
       distancePidFlag = false;
     }
