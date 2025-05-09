@@ -31,20 +31,19 @@
 
   // Motor settings
   #define MOTOR_PIN 9
-  #define HARD_MIN_DISTANCE_TO_FRONT_WALL_CM 15
-  #define SOFT_MIN_DISTANCE_TO_FRONT_WALL_CM 40
+  #define MIN_DISTANCE_TO_FRONT_WALL_CM 40
 
   // Steering settings
   #define STEERING_PIN 10
-  #define STEERING_MAX_ANGLE_DEG 15
+  #define STEERING_MAX_ANGLE_DEG 90
   
   // PID settings
   #define KP_SPEED 10.0
   #define KI_SPEED 20.0
   #define KD_SPEED 3.0
-  #define KP_DIST 50.0
-  #define KI_DIST 0.5
-  #define KD_DIST 3.0
+  #define KP_DIST 1.0
+  #define KI_DIST 0.0
+  #define KD_DIST 2.0
   #define MAX_ACCUM_ERROR 100.0
   #define PID_SAMPLING_FREQUENCY 500
   #define PID_WINDOW_SIZE_SEC 10
