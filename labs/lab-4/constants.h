@@ -23,7 +23,7 @@
 
   // Speed sensor settings
   #define SPEED_SENSOR_PIN 54
-  #define SPEED_SENSOR_UPDATE_FREQUENCY 10
+  #define SPEED_SENSOR_UPDATE_FREQUENCY SERIAL_FEEDBACK_FREQUENCY // Use serial timer
   #define WHEEL_DIAM_CM 6.5f
   #define NR_MAGNETS 4
   #define WHEEL_CONSTANT PI*WHEEL_DIAM_CM/100.0 // 2*PI*r = 2*PI*diam/2 = PI*diam
@@ -41,7 +41,7 @@
   #define KP_SPEED 10.0
   #define KI_SPEED 20.0
   #define KD_SPEED 3.0
-  #define KP_DIST 1.0
+  #define KP_DIST 10.0
   #define KI_DIST 0.0
   #define KD_DIST 2.0
   #define MAX_ACCUM_ERROR 100.0
@@ -51,6 +51,7 @@
   #define ACCUMULATOR_RESET false 
 
   // Proximity sensor settings
+  #define PROXIMITY_SENSOR_UPDATE_FREQUENCY 50
   #define PROXIMITY_PULSE_DURATION_US 10
   #define RIGHT_PROXIMITY_ECHO_PIN 50
   #define RIGHT_PROXIMITY_TRIGGER_PIN 51  
