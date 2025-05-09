@@ -4,9 +4,9 @@
 #include "PID.h"
 #include "constants.h"
 
-volatile bool pidFlag = false;
+volatile bool speedPidFlag = false;
 volatile bool distancePidFlag = false;
-volatile bool speedFlag = false;
+volatile bool speedSensorFlag = false;
 volatile bool sendFeedbackFlag = false;
 volatile bool triggerNextProximityFlag = false;
 volatile float targetSpeed = 0;
@@ -27,7 +27,7 @@ void setup() {
   setupSerialRock(BAUD_RATE);
   setupTimerInterruptChannel0(SERIAL_FEEDBACK_FREQUENCY);
   setupTimerInterruptChannel1(PID_SAMPLING_FREQUENCY);
-  setupTimerInterruptChannel2(SPEED_SENSOR_UPDATE_FREQUENCY);
+  setupTimerInterruptChannel2(PROXIMITY_SENSOR_UPDATE_FREQUENCY);
   setupSteering(STEERING_PIN);
   setupMotor(MOTOR_PIN);
   setupSpeedSensor(SPEED_SENSOR_PIN);
@@ -43,34 +43,34 @@ void setup() {
 void TC6_Handler() {
   TC_GetStatus(TC2, 0);           // Clears interrupt flag
   sendFeedbackFlag = true;
-  triggerNextProximityFlag = true;
+  speedSensorFlag = true;
 }
 
 // Interrupt handler for timer interrupt channel 1
 void TC7_Handler() {
   TC_GetStatus(TC2, 1);           // Clears interrupt flag
-  pidFlag = true;
+  speedPidFlag = true;
   distancePidFlag = true;
 }
 
 // Interrupt handler for timer interrupt channel 2
 void TC8_Handler() {
   TC_GetStatus(TC2, 2);           // Clears interrupt flag
-  speedFlag = true;
+    triggerNextProximityFlag = true;
 }
 
 // Flag-based programming needed for Arduino framework
 void loop() {
-    if (speedFlag) {
+    if (speedSensorFlag) {
       calcCurrSpeed();
-      speedFlag = false;
+      speedSensorFlag = false;
     }
-    if (pidFlag && motorStarted) {
+    if (speedPidFlag && motorStarted) {
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
       targetSpeed = speedLimiter(targetMaxSpeed, distanceToFrontWall);
       motorActuation = PIDControl(&motorPID, getSpeed(), targetSpeed);
       setTargetMotorRPMPercent(motorActuation);
-      pidFlag = false;
+      speedPidFlag = false;
     }
     if (distancePidFlag && motorStarted) {
       // Must check if positive offset = right or left
