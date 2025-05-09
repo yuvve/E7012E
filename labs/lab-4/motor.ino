@@ -18,14 +18,7 @@ void setTargetMotorRPMPercent(float speedPercent) {
     motor.writeMicroseconds(1500);
     return;
   }
-  int correctedValue = map((int) (100*speedPercent), 0, 100*100, 1600, 2000);
+  int correctedValue = (int) map((int) (100*speedPercent), 0, 100*100, 1600, 2000);
   correctedValue = constrain(correctedValue, 1500, 2000);
   motor.writeMicroseconds(correctedValue);
-}
-
-float speedLimiter(float maxSpeed, float frontDistanceToWallCm) {
-  if (frontDistanceToWallCm <= MIN_DISTANCE_TO_FRONT_WALL_CM) {
-    return 0.0;
-  }
-  return maxSpeed;
 }

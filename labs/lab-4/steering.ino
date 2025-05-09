@@ -8,11 +8,10 @@ void setupSteering(unsigned int pin) {
   DEBUG_PRINTLN("Steering initialized");
 }
 
-void changeSteeringAngle(int angle) {
-  int correctedValue = constrain(angle, -STEERING_MAX_ANGLE_DEG, STEERING_MAX_ANGLE_DEG);
-  correctedValue = map(correctedValue, -90, 90, 0, 50);
-  correctedValue = constrain(correctedValue, 0, 50);
-  steering.write(correctedValue);
+void changeSteeringAngle(float angle) {
+  float correctedValue = map(correctedValue, -90.0, 90.0, 0.0, 50.0);
+  correctedValue = constrain(correctedValue, 0.0, 50.0);
+  steering.write((int) correctedValue);
 }
 
 void freeSteering(int actuation) {
