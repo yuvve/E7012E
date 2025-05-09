@@ -8,7 +8,7 @@ from camera_detection import camera_vals
 import csv
 
 def save_data_csv(time, left, right, forward):
-    with open("sensor_data", 'w', newline='') as csvfile:
+    with open("sensor_data.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
 
         # write header
@@ -31,6 +31,7 @@ def main():
     left = []
     forward = []
     time = []
+    data_sampling_time = 0
 
     try:
         while True:
@@ -41,8 +42,8 @@ def main():
             left.append(vals['left_distance'])
             forward.append(vals['forward_distance'])
 
-            data_sampling_time =+ 0.1
             time.append(data_sampling_time)
+            data_sampling_time = data_sampling_time + 0.1
 
             with camera_val_lock:
                 if camera_vals['color'] == "red":
