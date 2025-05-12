@@ -47,7 +47,7 @@ def main():
             data_sampling_time = data_sampling_time + 0.1
 
             with camera_val_lock:
-                if camera_vals["color"] == "red":
+                if camera_vals["color"] == "red" and camera_vals["shape"] == "circle":
                     send("M0")
 
                 if camera_vals["color"] == "green" and camera_vals["shape"] == "circle":
