@@ -43,12 +43,9 @@
   #define STEERING_MAX_ANGLE 20.0
   
   // PID settings
-  #define KP_SPEED 10.0
-  #define KI_SPEED 20.0
-  #define KD_SPEED 3.0
-  #define KP_DIST 10.0
+  #define KP_DIST 0.2
   #define KI_DIST 0.0
-  #define KD_DIST 2.0
+  #define KD_DIST 6.0
   #define MAX_ACCUM_ERROR 100.0
   #define PID_SAMPLING_FREQUENCY 500
   #define PID_WINDOW_SIZE_SEC 10

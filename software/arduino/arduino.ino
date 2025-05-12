@@ -4,7 +4,6 @@
 #include "PID.h"
 #include "constants.h"
 
-volatile bool speedPidFlag = false;
 volatile bool distancePidFlag = false;
 volatile bool speedSensorFlag = false;
 volatile bool sendFeedbackFlag = false;
@@ -47,7 +46,6 @@ void TC6_Handler() {
 // Interrupt handler for timer interrupt channel 1
 void TC7_Handler() {
   TC_GetStatus(TC2, 1);           // Clears interrupt flag
-  speedPidFlag = true;
   distancePidFlag = true;
 }
 
@@ -63,19 +61,14 @@ void loop() {
       calcCurrSpeed();
       speedSensorFlag = false;
     }
-    if (speedPidFlag && motorStarted) {
+    if (motorStarted) {
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
-      float speed = (distanceToFrontWall>MIN_DISTANCE_TO_FRONT_WALL_CM) ? targetSpeed : 0.0;
-      motorActuation = PIDControl(&motorPID, getSpeed(), speed);
-      setTargetMotorRPMPercent(motorActuation);
-      speedPidFlag = false;
+      float targetSpeedOrStop = (distanceToFrontWall>MIN_DISTANCE_TO_FRONT_WALL_CM) ? targetSpeed : 0.0;
+      setTargetMotorRPMPercent(targetSpeedOrStop);
     }
     if (distancePidFlag && motorStarted) {
       float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
       steeringActuation = PIDControl(&distancePID, currentCenterOffset, 0);
-      //float distanceToRightWall = getProximityRange(rightProximitySensor);
-      //steeringActuation = PIDControl(&distancePID, distanceToRightWall, STEERING_DISTANCE_TO_RIGHT_WALL_CM);
-      //steeringActuation = constrain(steeringActuation, -STEERING_MAX_ANGLE_DEG, STEERING_MAX_ANGLE_DEG);
       changeSteeringAngle(steeringActuation);
       distancePidFlag = false;
     }

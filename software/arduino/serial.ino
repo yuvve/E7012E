@@ -22,7 +22,6 @@ void processSerialInput(const char* input) {
       if (targetSpeed <= 0.001){
         motorStarted = false;
         setTargetMotorRPMPercent(0.0);
-        resetPID(&motorPID);
       } else {
         motorStarted = true;
       }
