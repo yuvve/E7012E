@@ -10,6 +10,7 @@ def display(vals, camera_vals, lock, camera_lock):
     with lock:
         print("Serial Communication Values:")
         print(f"speed: {vals['current_speed']}")
+        print(f"forward_distance: {vals['forward_distance']}")
         print(f"left_distance: {vals['left_distance']}")
         print(f"right_distance {vals['right_distance']}\n")
 
