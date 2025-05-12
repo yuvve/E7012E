@@ -35,7 +35,7 @@ void calcSigma(state *self, slidingMode *controller) {
 // överföringsfunktion x_k+1 = f(x_k,u_k)
 void stateDynamics(state *self, slidingMode *controller, float f[2]){
   f[0] = self->theta + controller->T/self->hjulbas*tan(self->alpha)*self->speed;
-  f[1] = cos(self->theta)/cos(f[0])*(self->error - 2*controller->T*self->speed*sin(self->theta));
+  f[1] = cos(self->theta)*(self->error - 2*controller->T*self->speed*sin(self->theta));
 }
 
 // objektfunktion för sliding mode
