@@ -38,7 +38,7 @@ void setup() {
   setupProximitySensor(LEFT_PROXIMITY_ECHO_PIN, LEFT_PROXIMITY_TRIGGER_PIN, leftProximitySensor, leftProximityISR);
   setupProximitySensor(FORWARD_PROXIMITY_ECHO_PIN, FORWARD_PROXIMITY_TRIGGER_PIN, forwardProximitySensor, forwardProximityISR);
   setupPID(&distancePID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_DIST, KI_DIST, KD_DIST);
-  setupSlidingMode(&controller, ((1.0f/((float)PID_SAMPLING_FREQUENCY))), 0.1, 0.1);
+  setupSlidingMode(&controller, ((1.0f/((float)PID_SAMPLING_FREQUENCY))), 0.01, 0.5);
   setupState(&car);
   DEBUG_PRINTLN("Setup complete!");
 }

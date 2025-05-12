@@ -66,7 +66,8 @@ void slidingModeControl(state *self, slidingMode *controller) {
     // Update alpha temporärt för Wolfe vilkoren
     self->alpha = new_alpha;
     float F_new = objektFunktion(self, controller);
-
+    
+    h = 1;
     while (F_new > (1 - c*h)*F) {
       h = h / 2;
       new_alpha = alpha_old - h * F / dF;
