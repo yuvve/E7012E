@@ -6,8 +6,8 @@ void setupSlidingMode(slidingMode *self, float T, float epsilon, float lambda) {
   self->T = T;
   self->epsilon = epsilon;
   self->lambda = lambda;
-  self->p[0] = 0.0f;
-  self->p[1] = 0.0f;
+  self->p[0] = 1/sqrt(2);
+  self->p[1] = 1/sqrt(2);
   self->sigma = 0.0f;
 }
 
