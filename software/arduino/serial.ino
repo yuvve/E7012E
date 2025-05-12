@@ -16,8 +16,8 @@ Command parseSerialInput(const char* input) {
 
 void processSerialInput(const char* input) {
   Command cmd = parseSerialInput(input);
-  switch (toUpperCase(cmd.cmd)) {
-    case 'M':
+  switch (cmd.cmd) {
+    case 'm':
       targetSpeed = cmd.value;
       if (targetSpeed <= 0.001){
         motorStarted = false;
@@ -26,18 +26,27 @@ void processSerialInput(const char* input) {
         motorStarted = true;
       }
       break;
-    case 'S':
+    case 's':
       //targetCenterOffset = cmd.value;
       freeSteering(cmd.value);
       break;
+    case 'p':
+       kpFast = cmd.value;
+      break;  
     case 'P':
-      adjustP(&distancePID, cmd.value);
+        kpSlow = cmd.value;
+      break;
+    case 'i':
+      kiFast = cmd.value;
       break;
     case 'I':
-      adjustI(&distancePID, cmd.value);
+      kiSlow = cmd.value;
+      break;
+    case 'd':
+      kdFast = cmd.value;
       break;
     case 'D':
-      adjustD(&distancePID, cmd.value);
+      kdSlow = cmd.value;
       break;
     default:
       break;

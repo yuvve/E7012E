@@ -83,3 +83,11 @@ void adjustD(PIDData *self, float kD) {
   self->kD = kD;
   DEBUG_PRINTF("PID kD changed to: %.2f", kD);
 }
+
+void adjustPID(PIDData *self, float kP, float kI, float kD) {
+  noInterrupts();
+  self->kP = kP;
+  self->kI = kI;
+  self->kD = kD;
+  interrupts();
+}
