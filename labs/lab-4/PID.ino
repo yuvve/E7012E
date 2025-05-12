@@ -60,7 +60,7 @@ float PIDControl(PIDData *self, float actualValue, float targetValue) {
       accumulatedError = 0.0f;
     }
   }
-  
+
   float P = self->kP * error;
   float I = self->kI * constrain(accumulatedError,-self->maxAccumulatedError,self->maxAccumulatedError);
   float D = self->kD * derivative;

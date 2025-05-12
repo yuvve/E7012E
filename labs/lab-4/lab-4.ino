@@ -3,6 +3,8 @@
 #include "sensors.h"
 #include "PID.h"
 #include "constants.h"
+#include "state.h"
+#include "slidingMode.h"
 
 volatile bool speedPidFlag = false;
 volatile bool distancePidFlag = false;
@@ -13,11 +15,14 @@ volatile float targetSpeed = 0;
 volatile float motorActuation = 0;
 volatile float steeringActuation = 0;
 volatile bool motorStarted = false;
+volatile float centerAngle = 70; // grader 
 
 PIDData motorPID;
 PIDData distancePID;
 ProximitySensor rightProximitySensor, leftProximitySensor, forwardProximitySensor;
 TriggerState triggerState = TRIGGER_RIGHT;
+state car;
+slidingMode controller;
 
 void setup() {
   setupSensorData();
@@ -34,6 +39,8 @@ void setup() {
   setupProximitySensor(LEFT_PROXIMITY_ECHO_PIN, LEFT_PROXIMITY_TRIGGER_PIN, leftProximitySensor, leftProximityISR);
   setupProximitySensor(FORWARD_PROXIMITY_ECHO_PIN, FORWARD_PROXIMITY_TRIGGER_PIN, forwardProximitySensor, forwardProximityISR);
   setupPID(&distancePID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_DIST, KI_DIST, KD_DIST);
+  setupSlidingMode(&controller, ((1.0f/((float)PID_SAMPLING_FREQUENCY))), 0.1, 0.1);
+  setupState(&car);
   DEBUG_PRINTLN("Setup complete!");
 }
 
@@ -68,15 +75,16 @@ void loop() {
       float speed = (distanceToFrontWall>MIN_DISTANCE_TO_FRONT_WALL_CM) ? targetSpeed : 0.0;
       motorActuation = PIDControl(&motorPID, getSpeed(), speed);
       setTargetMotorRPMPercent(motorActuation);
+      car.speed = getSpeed();
       speedPidFlag = false;
     }
     if (distancePidFlag && motorStarted) {
-      float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
-      steeringActuation = PIDControl(&distancePID, currentCenterOffset, 0);
-      //float distanceToRightWall = getProximityRange(rightProximitySensor);
-      //steeringActuation = PIDControl(&distancePID, distanceToRightWall, STEERING_DISTANCE_TO_RIGHT_WALL_CM);
-      //steeringActuation = constrain(steeringActuation, -STEERING_MAX_ANGLE_DEG, STEERING_MAX_ANGLE_DEG);
-      changeSteeringAngle(steeringActuation);
+      // Must check if positive offset = right or left
+      float b = getProximityRange(rightProximitySensor);
+      float d = getProximityRange(leftProximitySensor);
+      measurement(&car, d, b);
+      slidingModeControl(&car, &controller);      // PIDControl(&distancePID, currentCenterOffset, targetCenterOffset);
+      changeSteeringAngle(car.alpha*180/PI + centerAngle);  // konverterar från radianer till grader
       distancePidFlag = false;
     }
     if (sendFeedbackFlag) {
