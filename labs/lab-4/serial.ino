@@ -16,7 +16,7 @@ Command parseSerialInput(const char* input) {
 
 void processSerialInput(const char* input) {
   Command cmd = parseSerialInput(input);
-  switch (cmd.cmd) {
+  switch (toUpperCase(cmd.cmd)) {
     case 'M':
       targetSpeed = cmd.value;
       if (targetSpeed <= 0.001){
