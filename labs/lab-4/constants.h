@@ -24,7 +24,7 @@
   // Car and korridor geometry
   #define CAR_HJULBAS 0.265 // hjulbas i meter
   #define CAR_SENSORBREDD 0.165 // avstånd mellan ultraljus sensorer i meter
-  #define KORRIDOR_BREDD 3 // bredden på korridoren i meter
+  #define KORRIDOR_BREDD 2.08 // bredden på korridoren i meter
 
   // Speed sensor settings
   #define SPEED_SENSOR_PIN 54
@@ -46,6 +46,7 @@
   #define STEERING_MAP_MAX_TO_SERVO 50.0
   #define STEERING_MAP_MIN_FROM_SERVO -45.0
   #define STEERING_MAP_MAX_FROM_SERVO 45.0
+  #define STEERING_MAP_CENTER_ANGLE 0
   
   // PID settings
   #define KP_SPEED 10.0

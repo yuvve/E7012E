@@ -15,7 +15,6 @@ volatile float targetSpeed = 0;
 volatile float motorActuation = 0;
 volatile float steeringActuation = 0;
 volatile bool motorStarted = false;
-volatile float centerAngle = 70; // grader 
 
 PIDData motorPID;
 PIDData distancePID;
@@ -83,8 +82,8 @@ void loop() {
       float b = getProximityRange(rightProximitySensor);
       float d = getProximityRange(leftProximitySensor);
       measurement(&car, d, b);
-      slidingModeControl(&car, &controller);      // PIDControl(&distancePID, currentCenterOffset, targetCenterOffset);
-      changeSteeringAngle(car.alpha*180/PI + centerAngle);  // konverterar från radianer till grader
+      slidingModeControl(&car, &controller);  // PIDControl(&distancePID, currentCenterOffset, targetCenterOffset);
+      changeSteeringAngle(car.alpha*180/PI);  // konverterar från radianer till grader
       distancePidFlag = false;
     }
     if (sendFeedbackFlag) {
