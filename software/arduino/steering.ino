@@ -3,19 +3,17 @@
 Servo steering;
 
 void setupSteering(unsigned int pin) {
-    steering.attach(pin);
-    steering.write(90);
-  if DEBUG {
-    Serial.println("Steering initialized");
-  }
+  steering.attach(pin);
+  steering.write(90);
+  DEBUG_PRINTLN("Steering initialized");
 }
 
-void changeSteeringAngle(int angle) {
-  int correctedValue = map(angle, -90, 90, 0, 100);
-  correctedValue = constrain(correctedValue, 0, 100);
-  steering.write(correctedValue);
-  if DEBUG {    
-    Serial.print("Changing angle to: ");
-    Serial.println(correctedValue);
-  }
+void changeSteeringAngle(float angle) {
+  float correctedValue = map(angle, STEERING_MIN_ANGLE, STEERING_MAX_ANGLE, STEERING_MIN_SERVO, STEERING_MAX_SERVO);
+  correctedValue = constrain(correctedValue, STEERING_MIN_SERVO, STEERING_MAX_SERVO);
+  steering.write((int) correctedValue);
+}
+
+void freeSteering(int actuation) {
+  steering.write(actuation);
 }
