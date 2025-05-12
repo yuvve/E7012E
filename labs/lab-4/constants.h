@@ -42,6 +42,8 @@
   #define STEERING_PIN 10
   #define STEERING_MAX_ANGLE_DEG 90.0
   #define STEERING_DISTANCE_TO_RIGHT_WALL_CM 50.0
+  #define STEERING_MAP_N90_TO_SERVO 0.0
+  #define STEERING_MAP_P90_TO_SERVO 50.0
   
   // PID settings
   #define KP_SPEED 10.0
