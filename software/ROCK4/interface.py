@@ -8,7 +8,7 @@ def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def display(vals, camera_vals, lock, camera_lock, cmd, fast, slow):
+def display(vals, camera_vals, lock, camera_lock, command_history):
     with lock:
         print("Serial Communication Values:")
         print(f"speed: {vals['current_speed']}")
@@ -22,16 +22,19 @@ def display(vals, camera_vals, lock, camera_lock, cmd, fast, slow):
         print(f"detected_color: {camera_vals['color']}")
         print(f"detected_depth: {camera_vals['depth']}\n")
 
-    print("PID Parameters:")
-    print(f"{fast['P']}, {fast['I']}, {fast['D']}")
-    print(f"{slow['p']}, {slow['i']}, {slow['d']}")
+    print("´\n")
+    print(command_history)
 
     print("\n")
     print_commands(COMMANDS)
-    print("\n")
-    print(cmd)
+
 
     time.sleep(TIMEOUT)
+
+def print_command_history(command_history):
+    print("Command History:")
+    for key, value in command_history.items():
+        print(f"{key}: {value}")
 
 def print_commands(commands):
     print("Commands:")
