@@ -18,6 +18,7 @@ volatile float oldTargetSpeed = 0;
 volatile float targetSpeed = 0;
 volatile float motorActuation = 0;
 volatile bool motorStarted = false;
+volatile bool steeringStarted = false;
 
 volatile float kpSlow = KP_SLOW;
 volatile float kiSlow = KI_SLOW;
@@ -25,6 +26,11 @@ volatile float kdSlow = KD_SLOW;
 volatile float kpFast = KP_FAST;
 volatile float kiFast = KI_FAST;
 volatile float kdFast = KD_FAST;
+volatile float frontDistanceToStartTurning = FRONT_DISTANCE_TO_START_TURNING;
+volatile float speedPercentFast = SPEED_PERCENT_FAST;
+volatile float speedPercentSlow = SPEED_PERCENT_SLOW;
+volatile uint turningRoutineTimerMS = TURNING_ROUTINE_TIME_MS;
+volatile float minDistanceToFrontWallCm = MIN_DISTANCE_TO_FRONT_WALL_CM;
 
 PIDData distancePID;
 ProximitySensor rightProximitySensor, leftProximitySensor, forwardProximitySensor;
@@ -66,6 +72,25 @@ void TC8_Handler() {
     triggerNextProximityFlag = true;
 }
 
+void goFast(){
+    noInterrupts();
+    turningRoutine = false;
+    adjustPID(&distancePID, kpFast, kiFast, kdFast);
+    targetSpeed = speedPercentFast;
+    interrupts();
+    DEBUG_PRINTLN("Fast mode started!");
+}
+
+void goSlow(){
+    noInterrupts();
+    turningRoutine = true;
+    turningTimerMillis = millis();
+    targetSpeed = speedPercentSlow;
+    adjustPID(&distancePID, kpSlow, kiSlow, kdSlow);
+    interrupts();
+    DEBUG_PRINTLN("Slow mode started!");
+}
+
 // Flag-based programming needed for Arduino framework
 void loop() {
     if (speedSensorFlag) {
@@ -74,7 +99,7 @@ void loop() {
     }
     if (motorStarted) {
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
-      float targetSpeedOrStop = (distanceToFrontWall>MIN_DISTANCE_TO_FRONT_WALL_CM) ? targetSpeed : 0.0;
+      float targetSpeedOrStop = (distanceToFrontWall>minDistanceToFrontWallCm) ? targetSpeed : 0.0;
 
       if (oldTargetSpeed != targetSpeedOrStop) {
         setTargetMotorRPMPercent(targetSpeedOrStop);
@@ -83,26 +108,16 @@ void loop() {
           oldTargetSpeed = targetSpeed;
         }
       }
-
     }
-    if (distancePidFlag && motorStarted) {
+    if (distancePidFlag && steeringStarted) {
       float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
 
-      if (!turningRoutine && distanceToFrontWall <= FRONT_DISTANCE_TO_START_TURNING) {
-        noInterrupts();
-        turningRoutine = true;
-        turningTimerMillis = millis();
-        targetSpeed = SPEED_PERCENT_SLOW;
-        adjustPID(&distancePID, kpSlow, kiSlow, kdSlow);
-        interrupts();
+      if (!turningRoutine && distanceToFrontWall <= frontDistanceToStartTurning) {
+        goSlow();
       } else if (turningRoutine) {
-        if (millis() - turningTimerMillis >= TURNING_ROUTINE_TIME_MS) {
-          noInterrupts();
-          turningRoutine = false;
-          adjustPID(&distancePID, kpFast, kiFast, kdFast);
-          targetSpeed = SPEED_PERCENT_FAST;
-          interrupts();
+        if (millis() - turningTimerMillis >= turningRoutineTimerMS) {
+          goFast();
         }
       }
 
