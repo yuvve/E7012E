@@ -33,7 +33,7 @@
   #define MOTOR_PIN 9
   #define MIN_DISTANCE_TO_FRONT_WALL_CM 40
   #define SPEED_PERCENT_SLOW 25.0
-  #define SPEED_PERCENT_FAST 35.0
+  #define SPEED_PERCENT_FAST 40.0
 
   // Steering settings
   #define STEERING_PIN 10
