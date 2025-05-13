@@ -61,9 +61,6 @@ def main():
             if cmd == "":
                 continue
 
-            if cmd.lower() == "q":
-                break
-
             if cmd[0] in "GgSsTtRrPpIiDdMmWw":
                 command_history[cmd[0]] = cmd[1:]
                 send(cmd)
