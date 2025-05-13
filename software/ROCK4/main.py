@@ -2,7 +2,7 @@ import csv
 import queue
 
 from camera_detection import camera_vals
-from camera_interface import stop_camera, camera_val_lock
+from camera_interface import stop_camera, camera_val_lock, start_camera_thread
 from input_handler import start_input_thread
 from interface import clear, display
 from serial_communication import start_receiver, send, close, vals, val_lock
@@ -29,15 +29,7 @@ def main():
     fast = {"P": "-", "I": "-", "D": "-"}
     slow = {"p": "-", "i": "-", "d": "-"}
 
-    '''
-    # Initialize video capture
     start_camera_thread()
-    right = []
-    left = []
-    forward = []
-    time = []
-    data_sampling_time = 0
-    '''
 
     try:
         while True:
