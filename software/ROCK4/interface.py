@@ -26,8 +26,9 @@ def display(vals, camera_vals, lock, camera_lock, cmd, fast, slow):
     print(f"{fast['P']}, {fast['I']}, {fast['D']}")
     print(f"{slow['p']}, {slow['i']}, {slow['d']}")
 
+    print("\n")
     print_commands(COMMANDS)
-    print("Type a command and hit Enter (or 'exit'):")
+    print("\n")
     print(cmd)
 
     time.sleep(TIMEOUT)
@@ -36,8 +37,7 @@ def print_commands(commands):
     print("Commands:")
     for key, value in commands.items():
         print(f"{key}: {value}")
-    print("Press 'exit' to quit.\n")
-    print("Press 'Enter' to continue...\n")
+    print("Send an empty command to exit...\n")
 
 COMMANDS = {
     'G': "Go Fast",
