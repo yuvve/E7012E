@@ -43,7 +43,7 @@
   #define STEERING_MAX_SERVO 50.0
   #define STEERING_MIN_ANGLE -30.0
   #define STEERING_MAX_ANGLE 20.0
-  #define FRONT_DISTANCE_TO_START_TURNING 400.0
+  #define FRONT_DISTANCE_TO_START_TURNING 300 // Might need to increase to 350 when the battery is full
   #define TURNING_ROUTINE_TIME_MS 3000
   
   // PID settings
