@@ -55,10 +55,10 @@ def main():
 
             with camera_val_lock:
                 if camera_vals["color"] == "red" and camera_vals["shape"] == "circle":
-                    send("M0")
+                    send("s")
 
                 if camera_vals["color"] == "green" and camera_vals["shape"] == "circle":
-                    send("M30")
+                    send("G")
 
             try:
                 cmd = cmd_q.get_nowait()
@@ -71,25 +71,17 @@ def main():
             # print(cmd)
             send(cmd)
 
-            match cmd[0]:
-                case "P":
-                    fast["P"] = cmd
-                case "I":
-                    fast["I"] = cmd
-                case "D":
-                    fast["D"] = cmd
-                case "p":
-                    slow["p"] = cmd
-                case "i":
-                    slow["i"] = cmd
-                case "d":
-                    slow["d"] = cmd
+            if cmd[0] in "PpIiDd":
+                if cmd[0].isupper():
+                    fast[cmd[0]] = cmd
+                else:
+                    slow[cmd[0]] = cmd
 
     except KeyboardInterrupt:
         pass
 
     finally:
-        send("M0")
+        send("S")
         stop_camera()
         # save_data_csv(time, left, right, forward)
         close()
