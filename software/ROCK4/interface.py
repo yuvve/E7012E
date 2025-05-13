@@ -18,17 +18,13 @@ def display(vals, camera_vals, lock, camera_lock, command_history):
         print(f"target_speed: {vals['target_speed']}")
         print(f"forward_distance: {vals['forward_distance']}")
         print(f"left_distance: {vals['left_distance']}")
-        print(f"right_distance {vals['right_distance']}")
-    
-    print("\n")
+        print(f"right_distance {vals['right_distance']}\n")
 
     with camera_lock:
         print("Camera Values:")
         print(f"detected_shape: {camera_vals['shape']}")
         print(f"detected_color: {camera_vals['color']}")
-        print(f"detected_depth: {camera_vals['depth']}")
-    
-    print("\n")
+        print(f"detected_depth: {camera_vals['depth']}\n")
     
     time.sleep(TIMEOUT)
 
@@ -36,7 +32,7 @@ def print_command_history(command_history):
     print("Lastest values sent:")
     for key, value in command_history.items():
         print(f"{key}: {value}")
-    print("\n")
+    print("")
 
 def print_commands(commands):
     print("Commands:")
