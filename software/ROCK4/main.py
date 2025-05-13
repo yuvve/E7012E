@@ -9,11 +9,11 @@ from serial_communication import start_receiver, send, close, vals, val_lock
 
 
 def save_data_csv(time, left, right, forward):
-    with open("sensor_data.csv", 'w', newline='') as csvfile:
+    with open("sensor_data.csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
 
         # write header
-        writer.writerow(['time', 'left', 'right', 'forward'])
+        writer.writerow(["time", "left", "right", "forward"])
 
         # write each pair of values concurrently
         rows = zip(time, left, right, forward)
@@ -21,7 +21,6 @@ def save_data_csv(time, left, right, forward):
 
 
 def main():
-
     # Initialize serial communication
     cmd_q = queue.Queue()
     start_receiver()
@@ -55,26 +54,11 @@ def main():
             '''
 
             with camera_val_lock:
-                if camera_vals['color'] == "red":
-                    send("M0")
-
-                if camera_vals['color'] == "green":
-                    if camera_vals['shape'] == "circle":
-                        send("M0.5")
-
-            right.append(vals["right_distance"])
-            left.append(vals["left_distance"])
-            forward.append(vals["forward_distance"])
-
-            time.append(data_sampling_time)
-            data_sampling_time = data_sampling_time + 0.1
-
-            with camera_val_lock:
                 if camera_vals["color"] == "red" and camera_vals["shape"] == "circle":
-                    send("M0")
+                    send("s")
 
                 if camera_vals["color"] == "green" and camera_vals["shape"] == "circle":
-                    send("M30")
+                    send("G")
 
             try:
                 cmd = cmd_q.get_nowait()
@@ -87,25 +71,17 @@ def main():
             # print(cmd)
             send(cmd)
 
-            match cmd[0]:
-                case "P":
-                    fast["P"] = cmd
-                case "I":
-                    fast["I"] = cmd
-                case "D":
-                    fast["D"] = cmd
-                case "p":
-                    slow["p"] = cmd
-                case "i":
-                    slow["i"] = cmd
-                case "d":
-                    slow["d"] = cmd
+            if cmd[0] in "PpIiDd":
+                if cmd[0].isupper():
+                    fast[cmd[0]] = cmd
+                else:
+                    slow[cmd[0]] = cmd
 
     except KeyboardInterrupt:
         pass
 
     finally:
-        send("M0")
+        send("S")
         stop_camera()
         # save_data_csv(time, left, right, forward)
         close()

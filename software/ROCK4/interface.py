@@ -26,7 +26,34 @@ def display(vals, camera_vals, lock, camera_lock, cmd, fast, slow):
     print(f"{fast['P']}, {fast['I']}, {fast['D']}")
     print(f"{slow['p']}, {slow['i']}, {slow['d']}")
 
-    print("Type a command and hit Enter (or 'exit'):")
+    print("\n")
+    print_commands(COMMANDS)
+    print("\n")
     print(cmd)
 
     time.sleep(TIMEOUT)
+
+def print_commands(commands):
+    print("Commands:")
+    for key, value in commands.items():
+        print(f"{key}: {value}")
+    print("Send an empty command to exit...\n")
+
+COMMANDS = {
+    'G': "Go Fast",
+    'g': "Go Slow",
+    'S': "Stop motor & steering",
+    's': "Stop motor",
+    'T/t': "Set turning routine timer",
+    'R/r': "Free steering",
+    'P': "Set fast PID P",
+    'p': "Set slow PID P",
+    'I': "Set fast PID I",
+    'i': "Set slow PID I",
+    'D': "Set fast PID D",
+    'd': "Set slow PID D",
+    'M': "Set fast speed percent",
+    'm': "Set slow speed percent",
+    'W': "Set min distance to front wall",
+    'w': "Set front distance to start turning",
+}

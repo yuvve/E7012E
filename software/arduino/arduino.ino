@@ -4,16 +4,34 @@
 #include "PID.h"
 #include "constants.h"
 
-volatile bool distancePidFlag = false;
-volatile bool speedSensorFlag = false;
 volatile bool sendFeedbackFlag = false;
+
+volatile bool distancePidFlag = false;
+volatile bool turningRoutine = false;
+volatile uint turningTimerMillis = 0;
+volatile float steeringActuation = 0;
+
+volatile bool speedSensorFlag = false;
 volatile bool triggerNextProximityFlag = false;
+
+volatile float oldTargetSpeed = 0;
 volatile float targetSpeed = 0;
 volatile float motorActuation = 0;
-volatile float steeringActuation = 0;
 volatile bool motorStarted = false;
+volatile bool steeringStarted = false;
 
-PIDData motorPID;
+volatile float kpSlow = KP_SLOW;
+volatile float kiSlow = KI_SLOW;
+volatile float kdSlow = KD_SLOW;
+volatile float kpFast = KP_FAST;
+volatile float kiFast = KI_FAST;
+volatile float kdFast = KD_FAST;
+volatile float frontDistanceToStartTurning = FRONT_DISTANCE_TO_START_TURNING;
+volatile float speedPercentFast = SPEED_PERCENT_FAST;
+volatile float speedPercentSlow = SPEED_PERCENT_SLOW;
+volatile uint turningRoutineTimerMS = TURNING_ROUTINE_TIME_MS;
+volatile float minDistanceToFrontWallCm = MIN_DISTANCE_TO_FRONT_WALL_CM;
+
 PIDData distancePID;
 ProximitySensor rightProximitySensor, leftProximitySensor, forwardProximitySensor;
 TriggerState triggerState = TRIGGER_RIGHT;
@@ -28,11 +46,10 @@ void setup() {
   setupSteering(STEERING_PIN);
   setupMotor(MOTOR_PIN);
   setupSpeedSensor(SPEED_SENSOR_PIN);
-  setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_SPEED, KI_SPEED, KD_SPEED);
   setupProximitySensor(RIGHT_PROXIMITY_ECHO_PIN, RIGHT_PROXIMITY_TRIGGER_PIN, rightProximitySensor, rightProximityISR);
   setupProximitySensor(LEFT_PROXIMITY_ECHO_PIN, LEFT_PROXIMITY_TRIGGER_PIN, leftProximitySensor, leftProximityISR);
   setupProximitySensor(FORWARD_PROXIMITY_ECHO_PIN, FORWARD_PROXIMITY_TRIGGER_PIN, forwardProximitySensor, forwardProximityISR);
-  setupPID(&distancePID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_DIST, KI_DIST, KD_DIST);
+  setupPID(&distancePID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_SLOW, KI_SLOW, KD_SLOW);
   DEBUG_PRINTLN("Setup complete!");
 }
 
@@ -55,6 +72,25 @@ void TC8_Handler() {
     triggerNextProximityFlag = true;
 }
 
+void goFast(){
+    noInterrupts();
+    turningRoutine = false;
+    adjustPID(&distancePID, kpFast, kiFast, kdFast);
+    targetSpeed = speedPercentFast;
+    interrupts();
+    DEBUG_PRINTLN("Fast mode started!");
+}
+
+void goSlow(){
+    noInterrupts();
+    turningRoutine = true;
+    turningTimerMillis = millis();
+    targetSpeed = speedPercentSlow;
+    adjustPID(&distancePID, kpSlow, kiSlow, kdSlow);
+    interrupts();
+    DEBUG_PRINTLN("Slow mode started!");
+}
+
 // Flag-based programming needed for Arduino framework
 void loop() {
     if (speedSensorFlag) {
@@ -63,11 +99,28 @@ void loop() {
     }
     if (motorStarted) {
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
-      float targetSpeedOrStop = (distanceToFrontWall>MIN_DISTANCE_TO_FRONT_WALL_CM) ? targetSpeed : 0.0;
-      setTargetMotorRPMPercent(targetSpeedOrStop);
+      float targetSpeedOrStop = (distanceToFrontWall>minDistanceToFrontWallCm) ? targetSpeed : 0.0;
+
+      if (oldTargetSpeed != targetSpeedOrStop) {
+        setTargetMotorRPMPercent(targetSpeedOrStop);
+
+        if (oldTargetSpeed != targetSpeed) {
+          oldTargetSpeed = targetSpeed;
+        }
+      }
     }
-    if (distancePidFlag && motorStarted) {
+    if (distancePidFlag && steeringStarted) {
       float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
+      float distanceToFrontWall = getProximityRange(forwardProximitySensor);
+
+      if (!turningRoutine && distanceToFrontWall <= frontDistanceToStartTurning) {
+        goSlow();
+      } else if (turningRoutine) {
+        if (millis() - turningTimerMillis >= turningRoutineTimerMS) {
+          goFast();
+        }
+      }
+
       steeringActuation = PIDControl(&distancePID, currentCenterOffset, 0);
       changeSteeringAngle(steeringActuation);
       distancePidFlag = false;

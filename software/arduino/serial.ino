@@ -16,28 +16,63 @@ Command parseSerialInput(const char* input) {
 
 void processSerialInput(const char* input) {
   Command cmd = parseSerialInput(input);
-  switch (toUpperCase(cmd.cmd)) {
-    case 'M':
-      targetSpeed = cmd.value;
-      if (targetSpeed <= 0.001){
-        motorStarted = false;
-        setTargetMotorRPMPercent(0.0);
-      } else {
-        motorStarted = true;
-      }
+  switch (cmd.cmd) {
+    case 'G':
+      motorStarted = true;
+      steeringStarted = true;
+      goFast();
+      break;
+    case 'g':
+      motorStarted = true;
+      steeringStarted = true;
+      goSlow();
       break;
     case 'S':
-      //targetCenterOffset = cmd.value;
+      motorStarted = false;
+      steeringStarted = false;
+      setTargetMotorRPMPercent(0.0);
+      break;
+    case 's':
+      motorStarted = false;
+      setTargetMotorRPMPercent(0.0);
+      break;
+    case 'T':
+    case 't':
+      turningRoutineTimerMS = cmd.value;
+      break;
+    case 'R':
+    case 'r':
       freeSteering(cmd.value);
       break;
     case 'P':
-      adjustP(&distancePID, cmd.value);
+       kpFast = cmd.value;
+      break;  
+    case 'p':
+      kpSlow = cmd.value;
       break;
     case 'I':
-      adjustI(&distancePID, cmd.value);
+      kiFast = cmd.value;
+      break;
+    case 'i':
+      kiSlow = cmd.value;
       break;
     case 'D':
-      adjustD(&distancePID, cmd.value);
+      kdFast = cmd.value;
+      break;
+    case 'd':
+      kdSlow = cmd.value;
+      break;
+    case 'M':
+      speedPercentFast = cmd.value;
+      break;
+    case 'm':
+      speedPercentSlow = cmd.value;
+      break;
+    case 'W':
+     minDistanceToFrontWallCm = cmd.value;
+     break;
+    case 'w': 
+      frontDistanceToStartTurning = cmd.value;
       break;
     default:
       break;
