@@ -47,9 +47,9 @@
   #define TURNING_ROUTINE_TIME_MS 3000
   
   // PID settings
-  #define KP_SLOW 0.1
+  #define KP_SLOW 0.2
   #define KI_SLOW 0.0
-  #define KD_SLOW 5.0
+  #define KD_SLOW 6.0
   #define KP_FAST 0.075
   #define KI_FAST 0.1
   #define KD_FAST 15.0
