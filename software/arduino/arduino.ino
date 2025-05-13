@@ -14,9 +14,9 @@ volatile float steeringActuation = 0;
 volatile bool speedSensorFlag = false;
 volatile bool triggerNextProximityFlag = false;
 
-volatile float oldTargetSpeed = 0;
-volatile float targetSpeed = 0;
-volatile float motorActuation = 0;
+volatile float targetSpeed = 0.0;
+volatile float targetSpeedOrStop = 0.0;
+volatile float motorActuation = 0.0;
 volatile bool motorStarted = false;
 volatile bool steeringStarted = false;
 
@@ -99,15 +99,9 @@ void loop() {
     }
     if (motorStarted) {
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
-      float targetSpeedOrStop = (distanceToFrontWall>minDistanceToFrontWallCm) ? targetSpeed : 0.0;
+      targetSpeedOrStop = (distanceToFrontWall>minDistanceToFrontWallCm) ? targetSpeed : 0.0;
+      setTargetMotorRPMPercent(targetSpeedOrStop);
 
-      if (oldTargetSpeed != targetSpeedOrStop) {
-        setTargetMotorRPMPercent(targetSpeedOrStop);
-
-        if (oldTargetSpeed != targetSpeed) {
-          oldTargetSpeed = targetSpeed;
-        }
-      }
     }
     if (distancePidFlag && steeringStarted) {
       float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);

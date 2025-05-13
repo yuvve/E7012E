@@ -107,7 +107,7 @@ void sendFeedback() {
   float forwardRange = getProximityRange(forwardProximitySensor);
   char message[SERIAL_INPUT_BUFFER_SIZE];
   snprintf(message, sizeof(message), "%.2f %.2f %.2f %.2f %.2f", 
-    currentSpeed, targetSpeed, forwardRange, leftRange, rightRange);
+    currentSpeed, targetSpeedOrStop, forwardRange, leftRange, rightRange);
 
   Serial1.println(message);
   DEBUG_PRINTLN(message);
