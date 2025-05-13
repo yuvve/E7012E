@@ -22,10 +22,11 @@ def display(vals, camera_vals, lock, camera_lock, command_history):
         print(f"detected_shape: {camera_vals['shape']}")
         print(f"detected_color: {camera_vals['color']}")
         print(f"detected_depth: {camera_vals['depth']}")
-
+    
+    print("\n")
+    
     print_command_history(command_history)
 
-    print("\n")
     print_commands(COMMANDS)
 
     time.sleep(TIMEOUT)
