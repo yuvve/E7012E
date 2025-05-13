@@ -9,13 +9,18 @@ def clear():
 
 
 def display(vals, camera_vals, lock, camera_lock, command_history):
+    print_command_history(command_history)
+    print_commands(COMMANDS)
+
     with lock:
         print("Serial Communication Values:")
         print(f"speed: {vals['current_speed']}")
         print(f"target_speed: {vals['target_speed']}")
         print(f"forward_distance: {vals['forward_distance']}")
         print(f"left_distance: {vals['left_distance']}")
-        print(f"right_distance {vals['right_distance']}\n")
+        print(f"right_distance {vals['right_distance']}")
+    
+    print("\n")
 
     with camera_lock:
         print("Camera Values:")
@@ -25,16 +30,13 @@ def display(vals, camera_vals, lock, camera_lock, command_history):
     
     print("\n")
     
-    print_command_history(command_history)
-
-    print_commands(COMMANDS)
-
     time.sleep(TIMEOUT)
 
 def print_command_history(command_history):
     print("Lastest values sent:")
     for key, value in command_history.items():
         print(f"{key}: {value}")
+    print("\n")
 
 def print_commands(commands):
     print("Commands:")
