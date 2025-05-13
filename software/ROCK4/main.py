@@ -26,15 +26,16 @@ def main():
     start_receiver()
     start_input_thread(cmd_q)
     cmd = ""
-    fast = {"P": "-", "I": "-", "D": "-"}
-    slow = {"p": "-", "i": "-", "d": "-"}
+    command_history = {
+
+    }
 
     start_camera_thread()
 
     try:
         while True:
             clear()
-            display(vals, camera_vals, val_lock, camera_val_lock, cmd, fast, slow)
+            display(vals, camera_vals, val_lock, camera_val_lock, command_history)
 
             '''
             right.append(vals['right_distance'])
@@ -57,17 +58,13 @@ def main():
             except queue.Empty:
                 continue
 
-            if cmd.lower() in "exit":
+            if cmd.lower() == "q":
                 break
 
-            # print(cmd)
-            send(cmd)
-
-            if cmd[0] in "PpIiDd":
-                if cmd[0].isupper():
-                    fast[cmd[0]] = cmd
-                else:
-                    slow[cmd[0]] = cmd
+            if cmd[0] in "GgSsTtRrPpIiDdMmWw":
+                command_history[cmd[0]] = cmd[1:]
+                send(cmd)
+                # print(cmd)
 
     except KeyboardInterrupt:
         pass
