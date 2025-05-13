@@ -38,7 +38,7 @@ def print_commands(commands):
     print("Commands:")
     for key, value in commands.items():
         print(f"{key}: {value}")
-    print("Send an empty command to exit...\n")
+    print("")
 
 COMMANDS = {
     'G': "Go Fast",

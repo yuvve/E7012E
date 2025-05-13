@@ -53,6 +53,9 @@ def main():
                 if camera_vals["color"] == "green" and camera_vals["shape"] == "circle":
                     send("G")
 
+            if cmd == "":
+                continue
+
             try:
                 cmd = cmd_q.get_nowait()
             except queue.Empty:
