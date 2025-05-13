@@ -21,8 +21,6 @@ def save_data_csv(time, left, right, forward):
 
 
 def main():
-
-def main():
     # Initialize serial communication
     cmd_q = queue.Queue()
     start_receiver()
@@ -54,20 +52,6 @@ def main():
             time.append(data_sampling_time)
             data_sampling_time = data_sampling_time + 0.1
             '''
-
-            with camera_val_lock:
-                if camera_vals['color'] == "red":
-                    send("M0")
-
-                if camera_vals["color"] == "green" and camera_vals["shape"] == "circle":
-                    send("M30")
-
-            right.append(vals["right_distance"])
-            left.append(vals["left_distance"])
-            forward.append(vals["forward_distance"])
-
-            time.append(data_sampling_time)
-            data_sampling_time = data_sampling_time + 0.1
 
             with camera_val_lock:
                 if camera_vals["color"] == "red" and camera_vals["shape"] == "circle":
