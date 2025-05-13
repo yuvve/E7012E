@@ -101,16 +101,19 @@ void loop() {
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
       targetSpeedOrStop = (distanceToFrontWall>minDistanceToFrontWallCm) ? targetSpeed : 0.0;
       setTargetMotorRPMPercent(targetSpeedOrStop);
-
     }
     if (distancePidFlag && steeringStarted) {
       float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
       float distanceToFrontWall = getProximityRange(forwardProximitySensor);
 
-      if (!turningRoutine && distanceToFrontWall <= frontDistanceToStartTurning) {
-        goSlow();
-      } else if (turningRoutine) {
-        if (millis() - turningTimerMillis >= turningRoutineTimerMS) {
+      if (distanceToFrontWall <= frontDistanceToStartTurning) {
+        if (turningRoutine) {
+          turningTimerMillis = millis();
+        } else {
+          goSlow();
+        }
+      } else {
+        if ((turningRoutine) && ((millis() - turningTimerMillis) >= turningRoutineTimerMS)) {
           goFast();
         }
       }
