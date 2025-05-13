@@ -23,7 +23,7 @@ def display(vals, camera_vals, lock, camera_lock, command_history):
         print(f"detected_depth: {camera_vals['depth']}\n")
 
     print("´\n")
-    print(command_history)
+    print_command_history(command_history)
 
     print("\n")
     print_commands(COMMANDS)
