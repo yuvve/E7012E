@@ -4,97 +4,82 @@
 #include "PID.h"
 #include "constants.h"
 
+volatile bool distancePidFlag = false;
+volatile bool speedSensorFlag = false;
 volatile bool sendFeedbackFlag = false;
-volatile bool pidFlag = false;
-volatile bool speedFlag = false;
+volatile bool triggerNextProximityFlag = false;
+volatile float targetSpeed = 0;
+volatile float motorActuation = 0;
+volatile float steeringActuation = 0;
 volatile bool motorStarted = false;
-volatile float targetSpeed = 0; 
-volatile float targetAngle = 0;
-volatile float motorTargetRPMPercent = 0;
 
 PIDData motorPID;
 PIDData distancePID;
+ProximitySensor rightProximitySensor, leftProximitySensor, forwardProximitySensor;
+TriggerState triggerState = TRIGGER_RIGHT;
 
 void setup() {
-    setupSensorData();
-    setupSerialUSB(BAUD_RATE);
-    setupSerialRock(BAUD_RATE);
-    setupTimerInterruptChannel0(SERIAL_FEEDBACK_FREQUENCY);
-    setupTimerInterruptChannel1(PID_SAMPLING_FREQUENCY);
-    setupTimerInterruptChannel2(SPEED_SENSOR_UPDATE_FREQUENCY);
-    setupSteering(STEERING_PIN);
-    setupMotor(MOTOR_PIN);
-    setupSpeedSensor(SPEED_SENSOR_PIN);
-    setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, START_KP, START_KI, START_KD);
-    if DEBUG {
-    Serial.println("Setup complete!");
-  }
+  setupSensorData();
+  setupSerialUSB(BAUD_RATE);
+  setupSerialRock(BAUD_RATE);
+  setupTimerInterruptChannel0(SERIAL_FEEDBACK_FREQUENCY);
+  setupTimerInterruptChannel1(PID_SAMPLING_FREQUENCY);
+  setupTimerInterruptChannel2(PROXIMITY_SENSOR_UPDATE_FREQUENCY);
+  setupSteering(STEERING_PIN);
+  setupMotor(MOTOR_PIN);
+  setupSpeedSensor(SPEED_SENSOR_PIN);
+  setupPID(&motorPID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_SPEED, KI_SPEED, KD_SPEED);
+  setupProximitySensor(RIGHT_PROXIMITY_ECHO_PIN, RIGHT_PROXIMITY_TRIGGER_PIN, rightProximitySensor, rightProximityISR);
+  setupProximitySensor(LEFT_PROXIMITY_ECHO_PIN, LEFT_PROXIMITY_TRIGGER_PIN, leftProximitySensor, leftProximityISR);
+  setupProximitySensor(FORWARD_PROXIMITY_ECHO_PIN, FORWARD_PROXIMITY_TRIGGER_PIN, forwardProximitySensor, forwardProximityISR);
+  setupPID(&distancePID, (1000.0f*(1.0f/((float)PID_SAMPLING_FREQUENCY))),MAX_ACCUM_ERROR, KP_DIST, KI_DIST, KD_DIST);
+  DEBUG_PRINTLN("Setup complete!");
 }
 
 // Interrupt handler for timer interrupt channel 0
 void TC6_Handler() {
   TC_GetStatus(TC2, 0);           // Clears interrupt flag
   sendFeedbackFlag = true;
+  speedSensorFlag = true;
 }
 
 // Interrupt handler for timer interrupt channel 1
 void TC7_Handler() {
   TC_GetStatus(TC2, 1);           // Clears interrupt flag
-  pidFlag = true;
+  distancePidFlag = true;
 }
 
 // Interrupt handler for timer interrupt channel 2
 void TC8_Handler() {
   TC_GetStatus(TC2, 2);           // Clears interrupt flag
-  speedFlag = true;
-}
-
-void processSerialInput(const char* input) {
-  Command cmd = parseSerialInput(input);
-  switch (cmd.cmd) {
-    case 'M':
-      targetSpeed = cmd.value;
-      if (targetSpeed == 0){
-        motorStarted = false; 
-        setTargetMotorRPMPercent(0);
-        resetPID(&motorPID);
-      } else {
-        motorStarted = true;
-      }
-      break;
-    case 'S':
-      targetAngle = cmd.value;
-      changeSteeringAngle(cmd.value);
-      break;
-    case 'P':
-      adjustP(&motorPID, cmd.value);
-      break;
-    case 'I':
-      adjustI(&motorPID, cmd.value);
-      break;
-    case 'D':
-      adjustD(&motorPID, cmd.value);
-      break;
-    default:
-      break;
-  }
+    triggerNextProximityFlag = true;
 }
 
 // Flag-based programming needed for Arduino framework
 void loop() {
-    if (speedFlag) {
+    if (speedSensorFlag) {
       calcCurrSpeed();
-      speedFlag = false;
+      speedSensorFlag = false;
     }
-    if (pidFlag && motorStarted) {
-      motorTargetRPMPercent = PIDControl(&motorPID, getSpeed(), targetSpeed);
-      setTargetMotorRPMPercent(motorTargetRPMPercent);
-      pidFlag = false;
+    if (motorStarted) {
+      float distanceToFrontWall = getProximityRange(forwardProximitySensor);
+      float targetSpeedOrStop = (distanceToFrontWall>MIN_DISTANCE_TO_FRONT_WALL_CM) ? targetSpeed : 0.0;
+      setTargetMotorRPMPercent(targetSpeedOrStop);
+    }
+    if (distancePidFlag && motorStarted) {
+      float currentCenterOffset = getProximityRange(rightProximitySensor) - getProximityRange(leftProximitySensor);
+      steeringActuation = PIDControl(&distancePID, currentCenterOffset, 0);
+      changeSteeringAngle(steeringActuation);
+      distancePidFlag = false;
     }
     if (sendFeedbackFlag) {
       sendFeedback();
       sendFeedbackFlag = false;
+    }  
+    if (triggerNextProximityFlag) {
+      triggerNextProximityFlag = !triggerProximitySensor(); // Returns true if the trigger is completed
     }
+
     readSerial(Serial1);
     if DEBUG {
         readSerial(Serial);
