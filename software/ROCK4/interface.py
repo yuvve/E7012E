@@ -57,4 +57,5 @@ COMMANDS = {
     'm': "Set slow speed percent",
     'W': "Set min distance to front wall",
     'w': "Set front distance to start turning",
+    'q/Q': "Quit",
 }

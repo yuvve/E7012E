@@ -58,13 +58,13 @@ def main():
             except queue.Empty:
                 continue
 
-            if cmd.lower() in "exit":
+            if cmd.lower() == "q":
                 break
 
-            # print(cmd)
-            send(cmd)
             if cmd[0] in "GgSsTtRrPpIiDdMmWw":
                 command_history[cmd[0]] = cmd[1:]
+                send(cmd)
+                # print(cmd)
 
     except KeyboardInterrupt:
         pass
