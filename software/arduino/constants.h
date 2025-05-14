@@ -43,11 +43,11 @@
   #define STEERING_MAX_SERVO 50.0
   #define STEERING_MIN_ANGLE -30.0
   #define STEERING_MAX_ANGLE 20.0
-  #define FRONT_DISTANCE_TO_START_TURNING 300
+  #define FRONT_DISTANCE_TO_START_TURNING 250
   #define TURNING_ROUTINE_DELAY_OFF_TIMER_MS 2000
   
   // PID settings
-  #define KP_SLOW 0.1
+  #define KP_SLOW 0.05
   #define KI_SLOW 0.1
   #define KD_SLOW 6.0
   #define KP_FAST 0.025 //0.025
