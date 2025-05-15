@@ -9,4 +9,4 @@
 |1|[8 Megapixels USB Camera](https://www.dfrobot.com/product-2188.html)|Camera|5V|
 |1|[Ultrasonic Ranging Module HC - SR04](https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf)|Proximity sensor|5V|
 |3|[DRFT-303](https://www.amazon.sg/Turnigy-D-Spec-DRFT-303-Steering-0-10Sec/dp/B00USQXOP4)|Servo|4.8V-6V|
-|1|Hall sensor|Hall sensor|5V?|
+|1|Hall sensor|Hall sensor|5V|
