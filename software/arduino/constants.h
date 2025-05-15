@@ -32,7 +32,7 @@
   // Motor settings
   #define MOTOR_PIN 9
   #define MIN_DISTANCE_TO_FRONT_WALL_CM 40
-  #define SPEED_PERCENT_SLOW 25.0
+  #define SPEED_PERCENT_SLOW 30.0
   #define SPEED_PERCENT_FAST 35.0
 
   // Steering settings
@@ -43,16 +43,16 @@
   #define STEERING_MAX_SERVO 50.0
   #define STEERING_MIN_ANGLE -30.0
   #define STEERING_MAX_ANGLE 20.0
-  #define FRONT_DISTANCE_TO_START_TURNING 300 // Might need to increase to 350 when the battery is full
-  #define TURNING_ROUTINE_TIME_MS 3000
+  #define FRONT_DISTANCE_TO_START_TURNING 250
+  #define TURNING_ROUTINE_DELAY_OFF_TIMER_MS 2000
   
   // PID settings
-  #define KP_SLOW 0.2
-  #define KI_SLOW 0.0
+  #define KP_SLOW 0.05
+  #define KI_SLOW 0.1
   #define KD_SLOW 6.0
-  #define KP_FAST 0.075
-  #define KI_FAST 0.1
-  #define KD_FAST 35.0
+  #define KP_FAST 0.04
+  #define KI_FAST 0.05
+  #define KD_FAST 45.0
   #define MAX_ACCUM_ERROR 100.0
   #define PID_SAMPLING_FREQUENCY 500
   #define PID_WINDOW_SIZE_SEC 10

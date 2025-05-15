@@ -29,7 +29,7 @@ volatile float kdFast = KD_FAST;
 volatile float frontDistanceToStartTurning = FRONT_DISTANCE_TO_START_TURNING;
 volatile float speedPercentFast = SPEED_PERCENT_FAST;
 volatile float speedPercentSlow = SPEED_PERCENT_SLOW;
-volatile uint turningRoutineTimerMS = TURNING_ROUTINE_TIME_MS;
+volatile uint turningRoutineTimerMS = TURNING_ROUTINE_DELAY_OFF_TIMER_MS;
 volatile float minDistanceToFrontWallCm = MIN_DISTANCE_TO_FRONT_WALL_CM;
 
 PIDData distancePID;

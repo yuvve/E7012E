@@ -31,6 +31,7 @@ void processSerialInput(const char* input) {
       motorStarted = false;
       steeringStarted = false;
       setTargetMotorRPMPercent(0.0);
+      changeSteeringAngle(0.0);
       break;
     case 's':
       motorStarted = false;
